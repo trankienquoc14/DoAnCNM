@@ -28,7 +28,12 @@ if (isset($_POST['action']) && $_POST['action'] == "register") {
     }
 
     // 🔥 Gọi model (model phải hash password)
-    $result = $user->register($name, $email, $password);
+    $userModel->register(
+    $_POST['name'],
+    $_POST['email'],
+    $_POST['password'],
+    $_POST['phone'] // ✅ thêm dòng này
+);
 
     if ($result) {
         header("Location: ../views/login.php?success=1");
@@ -62,17 +67,11 @@ if (isset($_POST['action']) && $_POST['action'] == "login") {
         // 🔥 Session chuẩn hơn
         $_SESSION['user'] = [
             'id' => $data['user_id'],
-            'name' => $data['name'],
+            'name' => $data['name'] ?? $data['full_name'] ?? 'User',
             'role' => $data['role']
         ];
-
-        // 🔥 Phân quyền redirect
-        if ($data['role'] == 'admin') {
-            header("Location: ../views/admin/dashboard.php");
-        } else {
-            header("Location: ../views/tours.php");
-        }
-        exit();
+       
+        header("Location: ../views/tours.php");
 
     } else {
         die("Sai mật khẩu");

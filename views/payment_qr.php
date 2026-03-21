@@ -26,7 +26,7 @@ if (!$payment) {
 
 // Thông tin tài khoản nhận tiền
 $bank_id = "MB";
-$account_no = "123456789";
+$account_no = "8609012004009";
 $account_name = "CONG TY DU LICH TRAVELVN";
 $amount = (int) $payment['amount'];
 $info = "DAT TOUR " . $payment_id;

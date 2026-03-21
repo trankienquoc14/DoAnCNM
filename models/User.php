@@ -1,66 +1,173 @@
 <?php
-class User {
+class User
+{
 
     private $conn;
-    private $table = "users";
 
-    public function __construct($db){
+    public function __construct($db)
+    {
         $this->conn = $db;
     }
 
-    // ================= REGISTER =================
-    public function register($name, $email, $password){
+    // ================= CHECK EMAIL =================
+    public function emailExists($email, $excludeId = null)
+    {
+        $sql = "SELECT user_id FROM users WHERE email = ?";
+        $params = [$email];
 
-        // 🔥 1. Check email tồn tại
-        $check = $this->conn->prepare("SELECT user_id FROM users WHERE email = :email");
-        $check->bindParam(":email", $email);
-        $check->execute();
-
-        if ($check->rowCount() > 0) {
-            return false; // email đã tồn tại
+        if ($excludeId) {
+            $sql .= " AND user_id != ?";
+            $params[] = $excludeId;
         }
 
-        // 🔥 2. Hash password
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute($params);
+
+        return $stmt->rowCount() > 0;
+    }
+
+    // ================= REGISTER =================
+    public function register($name, $email, $password, $phone)
+    {
+
+        if ($this->emailExists($email)) {
+            return false;
+        }
+
         $hash = password_hash($password, PASSWORD_BCRYPT);
 
-        // 🔥 3. Insert
-        $query = "INSERT INTO users(full_name, email, password, role)
-                  VALUES(:name, :email, :password, 'customer')";
+        $stmt = $this->conn->prepare("
+            INSERT INTO users(full_name,email,phone,password,role,status)
+            VALUES(?,?,?,?, 'customer','active')
+        ");
 
-        $stmt = $this->conn->prepare($query);
-
-        $stmt->bindParam(":name", $name);
-        $stmt->bindParam(":email", $email);
-        $stmt->bindParam(":password", $hash);
-
-        return $stmt->execute();
+        return $stmt->execute([$name, $email, $phone, $hash]);
     }
 
     // ================= LOGIN =================
-    public function login($email){
+    public function login($email)
+    {
 
-        $query = "SELECT user_id, full_name, email, password, role 
-                  FROM users 
-                  WHERE email = :email";
-
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":email", $email);
-        $stmt->execute();
+        $stmt = $this->conn->prepare("
+            SELECT user_id, full_name, email, password, role, status 
+            FROM users WHERE email = ?
+        ");
+        $stmt->execute([$email]);
 
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        // 🔥 Chuẩn hóa lại key để controller dùng dễ hơn
         if ($user) {
-            return [
-                'user_id' => $user['user_id'],
-                'name' => $user['full_name'], // map lại
-                'email' => $user['email'],
-                'password' => $user['password'],
-                'role' => $user['role']
-            ];
+            if ($user['status'] != 'active')
+                return 'locked';
+            return $user;
         }
 
         return false;
+    }
+
+    // ================= GET ALL USERS =================
+    public function getAllUsers()
+    {
+        return $this->conn->query("SELECT * FROM users ORDER BY created_at DESC")
+            ->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // ================= GET USER BY ID =================
+    public function getUserById($id)
+    {
+        $stmt = $this->conn->prepare("SELECT * FROM users WHERE user_id=?");
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // ================= CREATE USER (ADMIN) =================
+    public function createUser($data)
+    {
+
+        if ($this->emailExists($data['email'])) {
+            return false;
+        }
+
+        $hash = password_hash($data['password'], PASSWORD_BCRYPT);
+
+        $stmt = $this->conn->prepare("
+            INSERT INTO users(full_name,email,phone,password,role,status)
+            VALUES(?,?,?,?,?, 'active')
+        ");
+
+        return $stmt->execute([
+            $data['full_name'],
+            $data['email'],
+            $data['phone'],
+            $hash,
+            $data['role']
+        ]);
+    }
+
+    // ================= UPDATE USER =================
+    public function updateUser($id, $data)
+    {
+
+        if ($this->emailExists($data['email'], $id)) {
+            return false;
+        }
+
+        $stmt = $this->conn->prepare("
+            UPDATE users 
+            SET full_name=?, email=?, phone=?, role=? 
+            WHERE user_id=?
+        ");
+
+        return $stmt->execute([
+            $data['full_name'],
+            $data['email'],
+            $data['phone'],
+            $data['role'],
+            $id
+        ]);
+    }
+
+    // ================= DELETE USER =================
+    public function deleteUser($id)
+    {
+
+        $user = $this->getUserById($id);
+
+        // ❗ Không cho xóa admin cuối cùng
+        if ($user['role'] == 'admin') {
+            $stmt = $this->conn->prepare("
+                SELECT COUNT(*) as total FROM users WHERE role = 'admin'
+            ");
+            $stmt->execute();
+            $count = $stmt->fetch()['total'];
+
+            if ($count <= 1) {
+                return false;
+            }
+        }
+
+        return $this->conn->prepare("DELETE FROM users WHERE user_id=?")
+            ->execute([$id]);
+    }
+
+    // ================= TOGGLE STATUS =================
+    public function toggleStatus($id)
+    {
+        return $this->conn->prepare("
+            UPDATE users SET status =
+            CASE WHEN status='active' THEN 'locked' ELSE 'active' END
+            WHERE user_id=?
+        ")->execute([$id]);
+    }
+
+    // ================= RESET PASSWORD =================
+    public function resetPassword($id)
+    {
+        $hash = password_hash("123456", PASSWORD_BCRYPT);
+
+        return $this->conn->prepare("
+            UPDATE users SET password=? WHERE user_id=?
+        ")->execute([$hash, $id]);
     }
 }
 ?>

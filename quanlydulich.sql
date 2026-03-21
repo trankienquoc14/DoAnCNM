@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th3 18, 2026 lúc 03:23 AM
--- Phiên bản máy phục vụ: 10.4.32-MariaDB
--- Phiên bản PHP: 8.2.12
+-- Host: 127.0.0.1
+-- Generation Time: Mar 19, 2026 at 07:08 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Cơ sở dữ liệu: `quanlydulich`
+-- Database: `quanlydulich`
 --
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `bookings`
+-- Table structure for table `bookings`
 --
 
 CREATE TABLE `bookings` (
@@ -42,19 +42,21 @@ CREATE TABLE `bookings` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `bookings`
+-- Dumping data for table `bookings`
 --
 
 INSERT INTO `bookings` (`booking_id`, `user_id`, `departure_id`, `customer_name`, `email`, `phone`, `booking_date`, `number_of_people`, `total_price`, `note`, `status`) VALUES
 (7, 5, 3, 'Quốc Trần Kiến', 'trankienquoc12102004@gmail.com', '0345675125', '2026-03-17 22:29:13', 2, 10400000.00, '', 'confirmed'),
 (8, 5, 2, 'QKT', 'trankienquoc12102004@gmail.com', '0345675125', '2026-03-17 23:07:57', 2, 7000000.00, '', 'confirmed'),
 (9, 5, 1, 'Quốc Trần Kiến', 'trankienquoc12102004@gmail.com', '0345675125', '2026-03-17 23:25:27', 2, 7000000.00, '', 'confirmed'),
-(10, 6, 1, 'Quốc Trần Kiến', 'trankienquoc12102004@gmail.com', '0345675124', '2026-03-18 09:08:36', 2, 7000000.00, '', 'confirmed');
+(10, 6, 1, 'Quốc Trần Kiến', 'trankienquoc12102004@gmail.com', '0345675124', '2026-03-18 09:08:36', 2, 7000000.00, '', 'confirmed'),
+(11, 5, 1, 'Quốc Trần Kiến', 'trankienquoc12102004@gmail.com', '0345675125', '2026-03-18 10:49:11', 2, 7000000.00, '', 'pending'),
+(12, 5, 1, 'Quốc Trần Kiến', 'trankienquoc12102004@gmail.com', '0345675125', '2026-03-19 13:08:07', 2, 7000000.00, '', 'pending');
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `checkins`
+-- Table structure for table `checkins`
 --
 
 CREATE TABLE `checkins` (
@@ -67,7 +69,7 @@ CREATE TABLE `checkins` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `departures`
+-- Table structure for table `departures`
 --
 
 CREATE TABLE `departures` (
@@ -80,18 +82,18 @@ CREATE TABLE `departures` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `departures`
+-- Dumping data for table `departures`
 --
 
 INSERT INTO `departures` (`departure_id`, `tour_id`, `start_date`, `end_date`, `max_seats`, `available_seats`) VALUES
-(1, 1, '2026-04-10', '2026-04-12', 30, 24),
+(1, 1, '2026-04-10', '2026-04-12', 30, 20),
 (2, 1, '2026-04-20', '2026-04-22', 30, 28),
 (3, 2, '2026-05-01', '2026-05-04', 20, 5);
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `notifications`
+-- Table structure for table `notifications`
 --
 
 CREATE TABLE `notifications` (
@@ -106,7 +108,7 @@ CREATE TABLE `notifications` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `partners`
+-- Table structure for table `partners`
 --
 
 CREATE TABLE `partners` (
@@ -120,7 +122,7 @@ CREATE TABLE `partners` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `partners`
+-- Dumping data for table `partners`
 --
 
 INSERT INTO `partners` (`partner_id`, `partner_name`, `contact_person`, `phone`, `email`, `address`, `created_at`) VALUES
@@ -130,7 +132,7 @@ INSERT INTO `partners` (`partner_id`, `partner_name`, `contact_person`, `phone`,
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `payments`
+-- Table structure for table `payments`
 --
 
 CREATE TABLE `payments` (
@@ -144,19 +146,21 @@ CREATE TABLE `payments` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `payments`
+-- Dumping data for table `payments`
 --
 
 INSERT INTO `payments` (`payment_id`, `booking_id`, `amount`, `payment_method`, `payment_status`, `transaction_code`, `payment_date`) VALUES
 (6, 7, 10400000.00, 'qr', 'paid', NULL, NULL),
 (7, 8, 7000000.00, 'qr', 'paid', NULL, NULL),
 (8, 9, 7000000.00, 'qr', 'paid', NULL, NULL),
-(9, 10, 7000000.00, 'qr', 'paid', NULL, NULL);
+(9, 10, 7000000.00, 'qr', 'paid', NULL, NULL),
+(10, 11, 7000000.00, 'qr', 'pending', NULL, NULL),
+(11, 12, 7000000.00, 'qr', 'pending', NULL, NULL);
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `reviews`
+-- Table structure for table `reviews`
 --
 
 CREATE TABLE `reviews` (
@@ -171,7 +175,7 @@ CREATE TABLE `reviews` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `tours`
+-- Table structure for table `tours`
 --
 
 CREATE TABLE `tours` (
@@ -192,7 +196,7 @@ CREATE TABLE `tours` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `tours`
+-- Dumping data for table `tours`
 --
 
 INSERT INTO `tours` (`tour_id`, `partner_id`, `tour_name`, `destination`, `description`, `price`, `duration`, `status`, `created_by`, `hotel`, `include_service`, `exclude_service`, `itinerary`, `image`) VALUES
@@ -208,7 +212,7 @@ INSERT INTO `tours` (`tour_id`, `partner_id`, `tour_name`, `destination`, `descr
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `tour_guides`
+-- Table structure for table `tour_guides`
 --
 
 CREATE TABLE `tour_guides` (
@@ -220,7 +224,7 @@ CREATE TABLE `tour_guides` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `tour_schedules`
+-- Table structure for table `tour_schedules`
 --
 
 CREATE TABLE `tour_schedules` (
@@ -232,7 +236,7 @@ CREATE TABLE `tour_schedules` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `tour_schedules`
+-- Dumping data for table `tour_schedules`
 --
 
 INSERT INTO `tour_schedules` (`schedule_id`, `tour_id`, `day_number`, `location`, `activity`) VALUES
@@ -263,7 +267,7 @@ INSERT INTO `tour_schedules` (`schedule_id`, `tour_id`, `day_number`, `location`
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `users`
+-- Table structure for table `users`
 --
 
 CREATE TABLE `users` (
@@ -278,7 +282,7 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `users`
+-- Dumping data for table `users`
 --
 
 INSERT INTO `users` (`user_id`, `full_name`, `email`, `phone`, `password`, `role`, `status`, `created_at`) VALUES
@@ -290,11 +294,11 @@ INSERT INTO `users` (`user_id`, `full_name`, `email`, `phone`, `password`, `role
 (6, '6aye', 'atwbd12@gmail.com', NULL, '$2y$10$T.PnqQ8oMu1jsXaVeHO78.kbIVfLF7yJpi0YZAXULJIexACfqTLnG', 'customer', 'active', '2026-03-18 02:04:15');
 
 --
--- Chỉ mục cho các bảng đã đổ
+-- Indexes for dumped tables
 --
 
 --
--- Chỉ mục cho bảng `bookings`
+-- Indexes for table `bookings`
 --
 ALTER TABLE `bookings`
   ADD PRIMARY KEY (`booking_id`),
@@ -302,7 +306,7 @@ ALTER TABLE `bookings`
   ADD KEY `departure_id` (`departure_id`);
 
 --
--- Chỉ mục cho bảng `checkins`
+-- Indexes for table `checkins`
 --
 ALTER TABLE `checkins`
   ADD PRIMARY KEY (`checkin_id`),
@@ -310,14 +314,14 @@ ALTER TABLE `checkins`
   ADD KEY `staff_id` (`staff_id`);
 
 --
--- Chỉ mục cho bảng `departures`
+-- Indexes for table `departures`
 --
 ALTER TABLE `departures`
   ADD PRIMARY KEY (`departure_id`),
   ADD KEY `tour_id` (`tour_id`);
 
 --
--- Chỉ mục cho bảng `notifications`
+-- Indexes for table `notifications`
 --
 ALTER TABLE `notifications`
   ADD PRIMARY KEY (`notification_id`),
@@ -325,20 +329,20 @@ ALTER TABLE `notifications`
   ADD KEY `booking_id` (`booking_id`);
 
 --
--- Chỉ mục cho bảng `partners`
+-- Indexes for table `partners`
 --
 ALTER TABLE `partners`
   ADD PRIMARY KEY (`partner_id`);
 
 --
--- Chỉ mục cho bảng `payments`
+-- Indexes for table `payments`
 --
 ALTER TABLE `payments`
   ADD PRIMARY KEY (`payment_id`),
   ADD KEY `booking_id` (`booking_id`);
 
 --
--- Chỉ mục cho bảng `reviews`
+-- Indexes for table `reviews`
 --
 ALTER TABLE `reviews`
   ADD PRIMARY KEY (`review_id`),
@@ -346,7 +350,7 @@ ALTER TABLE `reviews`
   ADD KEY `tour_id` (`tour_id`);
 
 --
--- Chỉ mục cho bảng `tours`
+-- Indexes for table `tours`
 --
 ALTER TABLE `tours`
   ADD PRIMARY KEY (`tour_id`),
@@ -354,7 +358,7 @@ ALTER TABLE `tours`
   ADD KEY `created_by` (`created_by`);
 
 --
--- Chỉ mục cho bảng `tour_guides`
+-- Indexes for table `tour_guides`
 --
 ALTER TABLE `tour_guides`
   ADD PRIMARY KEY (`assignment_id`),
@@ -362,149 +366,149 @@ ALTER TABLE `tour_guides`
   ADD KEY `staff_id` (`staff_id`);
 
 --
--- Chỉ mục cho bảng `tour_schedules`
+-- Indexes for table `tour_schedules`
 --
 ALTER TABLE `tour_schedules`
   ADD PRIMARY KEY (`schedule_id`),
   ADD KEY `tour_id` (`tour_id`);
 
 --
--- Chỉ mục cho bảng `users`
+-- Indexes for table `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`user_id`),
   ADD UNIQUE KEY `email` (`email`);
 
 --
--- AUTO_INCREMENT cho các bảng đã đổ
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT cho bảng `bookings`
+-- AUTO_INCREMENT for table `bookings`
 --
 ALTER TABLE `bookings`
-  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
--- AUTO_INCREMENT cho bảng `checkins`
+-- AUTO_INCREMENT for table `checkins`
 --
 ALTER TABLE `checkins`
   MODIFY `checkin_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT cho bảng `departures`
+-- AUTO_INCREMENT for table `departures`
 --
 ALTER TABLE `departures`
   MODIFY `departure_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT cho bảng `notifications`
+-- AUTO_INCREMENT for table `notifications`
 --
 ALTER TABLE `notifications`
   MODIFY `notification_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT cho bảng `partners`
+-- AUTO_INCREMENT for table `partners`
 --
 ALTER TABLE `partners`
   MODIFY `partner_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT cho bảng `payments`
+-- AUTO_INCREMENT for table `payments`
 --
 ALTER TABLE `payments`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
--- AUTO_INCREMENT cho bảng `reviews`
+-- AUTO_INCREMENT for table `reviews`
 --
 ALTER TABLE `reviews`
   MODIFY `review_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT cho bảng `tours`
+-- AUTO_INCREMENT for table `tours`
 --
 ALTER TABLE `tours`
   MODIFY `tour_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
--- AUTO_INCREMENT cho bảng `tour_guides`
+-- AUTO_INCREMENT for table `tour_guides`
 --
 ALTER TABLE `tour_guides`
   MODIFY `assignment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT cho bảng `tour_schedules`
+-- AUTO_INCREMENT for table `tour_schedules`
 --
 ALTER TABLE `tour_schedules`
   MODIFY `schedule_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
--- AUTO_INCREMENT cho bảng `users`
+-- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
   MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- Các ràng buộc cho các bảng đã đổ
+-- Constraints for dumped tables
 --
 
 --
--- Các ràng buộc cho bảng `bookings`
+-- Constraints for table `bookings`
 --
 ALTER TABLE `bookings`
   ADD CONSTRAINT `bookings_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
   ADD CONSTRAINT `bookings_ibfk_2` FOREIGN KEY (`departure_id`) REFERENCES `departures` (`departure_id`);
 
 --
--- Các ràng buộc cho bảng `checkins`
+-- Constraints for table `checkins`
 --
 ALTER TABLE `checkins`
   ADD CONSTRAINT `checkins_ibfk_1` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`booking_id`),
   ADD CONSTRAINT `checkins_ibfk_2` FOREIGN KEY (`staff_id`) REFERENCES `users` (`user_id`);
 
 --
--- Các ràng buộc cho bảng `departures`
+-- Constraints for table `departures`
 --
 ALTER TABLE `departures`
   ADD CONSTRAINT `departures_ibfk_1` FOREIGN KEY (`tour_id`) REFERENCES `tours` (`tour_id`);
 
 --
--- Các ràng buộc cho bảng `notifications`
+-- Constraints for table `notifications`
 --
 ALTER TABLE `notifications`
   ADD CONSTRAINT `notifications_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
   ADD CONSTRAINT `notifications_ibfk_2` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`booking_id`);
 
 --
--- Các ràng buộc cho bảng `payments`
+-- Constraints for table `payments`
 --
 ALTER TABLE `payments`
   ADD CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`booking_id`);
 
 --
--- Các ràng buộc cho bảng `reviews`
+-- Constraints for table `reviews`
 --
 ALTER TABLE `reviews`
   ADD CONSTRAINT `reviews_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
   ADD CONSTRAINT `reviews_ibfk_2` FOREIGN KEY (`tour_id`) REFERENCES `tours` (`tour_id`);
 
 --
--- Các ràng buộc cho bảng `tours`
+-- Constraints for table `tours`
 --
 ALTER TABLE `tours`
   ADD CONSTRAINT `tours_ibfk_1` FOREIGN KEY (`partner_id`) REFERENCES `partners` (`partner_id`),
   ADD CONSTRAINT `tours_ibfk_2` FOREIGN KEY (`created_by`) REFERENCES `users` (`user_id`);
 
 --
--- Các ràng buộc cho bảng `tour_guides`
+-- Constraints for table `tour_guides`
 --
 ALTER TABLE `tour_guides`
   ADD CONSTRAINT `tour_guides_ibfk_1` FOREIGN KEY (`departure_id`) REFERENCES `departures` (`departure_id`),
   ADD CONSTRAINT `tour_guides_ibfk_2` FOREIGN KEY (`staff_id`) REFERENCES `users` (`user_id`);
 
 --
--- Các ràng buộc cho bảng `tour_schedules`
+-- Constraints for table `tour_schedules`
 --
 ALTER TABLE `tour_schedules`
   ADD CONSTRAINT `tour_schedules_ibfk_1` FOREIGN KEY (`tour_id`) REFERENCES `tours` (`tour_id`) ON DELETE CASCADE;

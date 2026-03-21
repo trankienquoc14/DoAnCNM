@@ -1,7 +1,7 @@
-<?php 
+<?php
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
-} 
+}
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -16,7 +16,7 @@ if (session_status() === PHP_SESSION_NONE) {
     <style>
         /* Tùy chỉnh Navbar mang phong cách Traveloka */
         .navbar-custom {
-            background-color:#66CCFF;
+            background-color: #66CCFF;
             padding: 12px 0;
             border-bottom: 1px solid #f0f0f0;
         }
@@ -112,7 +112,46 @@ if (session_status() === PHP_SESSION_NONE) {
                             <i class="bi bi-headset me-1"></i> Hỗ trợ
                         </a>
                     </li>
+                    <?php if (isset($_SESSION['user'])): ?>
 
+                        <?php if ($_SESSION['user']['role'] == 'tour_manager'): ?>
+                            <li class="nav-item">
+                                <a class="nav-link nav-link-custom fw-semibold text-warning"
+                                    href="../public/manager.php?action=dashboard">
+                                    <i class="bi bi-gear-fill me-1"></i> Quản lý
+                                </a>
+                            </li>
+
+                        <?php elseif ($_SESSION['user']['role'] == 'guide'): ?>
+                            <li class="nav-item">
+                                <a class="nav-link nav-link-custom fw-semibold text-success"
+                                    href="../public/guide.php?action=schedule"> <i class="bi bi-briefcase-fill me-1"></i> Công
+                                    việc
+                                </a>
+                            </li>
+                        <?php endif; ?>
+                        <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] == 'admin'): ?>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-danger fw-bold" href="#" role="button"
+                                    data-bs-toggle="dropdown">
+                                    <i class="bi bi-shield-lock-fill me-1"></i> Admin
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end shadow">
+                                    <li>
+                                        <a class="dropdown-item" href="../public/admin.php">
+                                            <i class="bi bi-people me-2"></i> Quản lý User
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="../public/manager.php?action=dashboard">
+                                            <i class="bi bi-briefcase me-2"></i> Quản lý Tour
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        <?php endif; ?>
+
+                    <?php endif; ?>
                     <?php if (isset($_SESSION['user'])): ?>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle user-dropdown-toggle" href="#" role="button"
@@ -123,7 +162,7 @@ if (session_status() === PHP_SESSION_NONE) {
                                 <li><a class="dropdown-item py-2" href="../views/profile.php"><i
                                             class="bi bi-person me-2"></i>Tài khoản của tôi</a></li>
                                 <li><a class="dropdown-item py-2" href="../views/my_booking.php"><i
-                                            class="bi bi-bag-check me-2"></i>My booking </a></li>
+                                            class="bi bi-bag-check me-2"></i>Chuyến đi của tôi </a></li>
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
