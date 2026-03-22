@@ -82,6 +82,9 @@ switch ($action) {
     case 'bookings':
         $controller->bookings();
         break;
+    case 'bookingDetail':
+        $controller->bookingDetail();
+        break;
 
     case 'confirmBooking':
         $controller->confirmBooking();

@@ -1,41 +1,11 @@
-<?php
-require_once '../config/database.php';
-
-$db = (new Database())->connect();
-
-$payment_id = $_GET['payment_id'] ?? 0;
-
-if (!$payment_id) {
-    die("<div class='text-center mt-5'><h3>Thiếu thông tin thanh toán (payment_id)</h3></div>");
+<?php 
+// Kiểm tra nếu Controller chưa truyền dữ liệu sang thì báo lỗi
+if (empty($payment)) {
+    echo "<div class='text-center mt-5'><h3>Không tìm thấy giao dịch thanh toán</h3></div>";
+    exit;
 }
-
-// Lấy trực tiếp customer_name từ bảng bookings như cấu trúc bạn vừa gửi
-$stmt = $db->prepare("
-    SELECT p.*, b.customer_name 
-    FROM payments p
-    JOIN bookings b ON p.booking_id = b.booking_id
-    WHERE p.payment_id = ?
-");
-
-$stmt->execute([$payment_id]);
-$payment = $stmt->fetch(PDO::FETCH_ASSOC);
-
-if (!$payment) {
-    die("<div class='text-center mt-5'><h3>Không tìm thấy giao dịch thanh toán</h3></div>");
-}
-
-// Thông tin tài khoản nhận tiền
-$bank_id = "MB";
-$account_no = "8609012004009";
-$account_name = "CONG TY DU LICH TRAVELVN";
-$amount = (int) $payment['amount'];
-$info = "DAT TOUR " . $payment_id;
-
-// Link tạo mã QR từ VietQR
-$qr_url = "https://img.vietqr.io/image/{$bank_id}-{$account_no}-compact2.png?amount={$amount}&addInfo=" . urlencode($info) . "&accountName=" . urlencode($account_name);
+include 'layouts/header.php'; 
 ?>
-
-<?php include __DIR__ . "/layouts/header.php"; ?>
 
 <style>
     :root {
@@ -229,7 +199,7 @@ $qr_url = "https://img.vietqr.io/image/{$bank_id}-{$account_no}-compact2.png?amo
                     </div>
                 </div>
 
-                <form method="POST" action="../controllers/confirm_payment.php">
+                <form method="POST" action="index.php?action=confirmPayment">
                     <input type="hidden" name="payment_id" value="<?= $payment_id ?>">
                     <button type="submit" class="btn-confirm">
                         <i class="bi bi-check-circle-fill"></i> Tôi đã hoàn tất chuyển khoản
@@ -244,7 +214,7 @@ $qr_url = "https://img.vietqr.io/image/{$bank_id}-{$account_no}-compact2.png?amo
         </div>
 
         <div class="text-center mt-3">
-            <a href="my_booking.php" class="text-decoration-none text-muted"><i class="bi bi-arrow-left me-1"></i> Quay
+            <a href="index.php?action=myBookings" class="text-decoration-none text-muted"><i class="bi bi-arrow-left me-1"></i> Quay
                 lại danh sách đơn</a>
         </div>
     </div>
@@ -267,4 +237,4 @@ $qr_url = "https://img.vietqr.io/image/{$bank_id}-{$account_no}-compact2.png?amo
     }
 </script>
 
-<?php include __DIR__ . "/layouts/footer.php"; ?>
+<?php include 'layouts/footer.php'; ?>

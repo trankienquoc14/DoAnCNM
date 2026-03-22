@@ -412,6 +412,7 @@ class ManagerController
         JOIN tours t ON d.tour_id = t.tour_id
         LEFT JOIN departure_guides dg ON d.departure_id = dg.departure_id
         LEFT JOIN users u ON dg.guide_id = u.user_id
+        WHERE d.status != 'cancelled'   -- 👈 THÊM DÒNG NÀY
         GROUP BY d.departure_id
         ORDER BY d.start_date DESC
     ");
@@ -424,7 +425,30 @@ class ManagerController
     {
         $id = $_GET['id'];
 
-        $stmt = $this->db->prepare("DELETE FROM departures WHERE departure_id=?");
+        // 1. kiểm tra có booking chưa
+        $stmt = $this->db->prepare("
+        SELECT COUNT(*) 
+        FROM bookings 
+        WHERE departure_id=?
+    ");
+        $stmt->execute([$id]);
+        $count = $stmt->fetchColumn();
+
+        // 2. nếu đã có khách đặt → không cho huỷ
+        if ($count > 0) {
+            echo "<script>
+            alert('Không thể huỷ! Tour đã có khách đặt.');
+            window.location='manager.php?action=departures';
+        </script>";
+            return;
+        }
+
+        // 3. nếu chưa có ai → cho huỷ (soft delete)
+        $stmt = $this->db->prepare("
+        UPDATE departures 
+        SET status='cancelled'
+        WHERE departure_id=?
+    ");
         $stmt->execute([$id]);
 
         header("Location: manager.php?action=departures");
@@ -447,25 +471,34 @@ class ManagerController
     {
         $id = $_GET['id'];
 
-        // cập nhật trạng thái
-        $stmt = $this->db->prepare("
-        UPDATE bookings 
-        SET status='confirmed' 
-        WHERE booking_id=?
-    ");
-        $stmt->execute([$id]);
+        // 1. Lấy thông tin đơn hàng (để biết số lượng người đặt và mã lịch trình)
+        $stmtBooking = $this->db->prepare("SELECT departure_id, number_of_people, status FROM bookings WHERE booking_id = ?");
+        $stmtBooking->execute([$id]);
+        $booking = $stmtBooking->fetch(PDO::FETCH_ASSOC);
 
-        // cập nhật số chỗ
-        $stmt = $this->db->prepare("
-        UPDATE departures 
-        SET 
-            booked_seats = booked_seats + 1,
-            available_seats = available_seats - 1
-        WHERE departure_id = (
-            SELECT departure_id FROM bookings WHERE booking_id=?
-        )
-    ");
-        $stmt->execute([$id]);
+        // Chống duyệt lại đơn đã duyệt rồi
+        if (!$booking || $booking['status'] === 'confirmed') {
+            header("Location: manager.php?action=bookings");
+            exit;
+        }
+
+        // 2. Cập nhật trạng thái đơn hàng thành 'confirmed'
+        $stmtUpdateStatus = $this->db->prepare("UPDATE bookings SET status='confirmed' WHERE booking_id=?");
+        $stmtUpdateStatus->execute([$id]);
+
+        // 3. Cập nhật số chỗ: Cộng/Trừ theo đúng số lượng người trong đơn hàng (number_of_people)
+        $stmtUpdateSeats = $this->db->prepare("
+            UPDATE departures 
+            SET 
+                booked_seats = booked_seats + ?, 
+                available_seats = available_seats - ?
+            WHERE departure_id = ?
+        ");
+        $stmtUpdateSeats->execute([
+            $booking['number_of_people'],
+            $booking['number_of_people'],
+            $booking['departure_id']
+        ]);
 
         header("Location: manager.php?action=bookings");
     }
@@ -543,6 +576,44 @@ class ManagerController
     ")->fetchAll(PDO::FETCH_ASSOC);
 
         require __DIR__ . '/../views/manager/report.php';
+    }
+    // ================= BOOKING DETAIL (XEM CHI TIẾT ĐƠN HÀNG) =================
+    public function bookingDetail()
+    {
+        // 1. Nhận ID đơn hàng từ URL
+        $booking_id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+
+        if ($booking_id <= 0) {
+            echo "<script>alert('Mã đơn hàng không hợp lệ!'); window.location.href='manager.php?action=bookings';</script>";
+            exit;
+        }
+
+        // 2. Truy vấn chi tiết đơn hàng (Kết nối các bảng liên quan)
+        // Chúng ta lấy: Thông tin đơn, Email tài khoản, Tên Tour, Ảnh Tour, Ngày đi, Trạng thái thanh toán
+        $stmt = $this->db->prepare("
+            SELECT b.*, 
+                   u.email as account_email, 
+                   t.tour_name, t.image, 
+                   d.start_date, d.end_date, 
+                   p.payment_method, p.payment_status, p.transaction_code, p.payment_date
+            FROM bookings b
+            LEFT JOIN users u ON b.user_id = u.user_id
+            JOIN departures d ON b.departure_id = d.departure_id
+            JOIN tours t ON d.tour_id = t.tour_id
+            LEFT JOIN payments p ON b.booking_id = p.booking_id
+            WHERE b.booking_id = ?
+        ");
+        $stmt->execute([$booking_id]);
+        $detail = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // 3. Nếu không tìm thấy đơn hàng
+        if (!$detail) {
+            echo "<script>alert('Không tìm thấy thông tin đơn hàng này!'); window.location.href='manager.php?action=bookings';</script>";
+            exit;
+        }
+
+        // 4. Gọi View hiển thị (Nhớ kiểm tra đường dẫn file view của bạn)
+        require __DIR__ . '/../views/manager/booking_detail.php';
     }
 
 

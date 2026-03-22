@@ -199,5 +199,59 @@ class Tour
         $query = "SELECT COUNT(*) as total FROM " . $this->table;
         return $this->conn->query($query)->fetch(PDO::FETCH_ASSOC)['total'];
     }
+    // =========================
+// 📌 SEARCH + JOIN DEPARTURES
+// =========================
+    public function searchTours($filters = [])
+    {
+        $query = "SELECT DISTINCT t.* 
+              FROM tours t
+              LEFT JOIN departures d ON t.tour_id = d.tour_id
+              WHERE t.status = 'active'
+                AND (d.status = 'upcoming' OR d.status IS NULL)";
+
+        $params = [];
+
+        if (!empty($filters['search_term'])) {
+            $query .= " AND (t.destination LIKE ? OR t.tour_name LIKE ?)";
+            $params[] = "%{$filters['search_term']}%";
+            $params[] = "%{$filters['search_term']}%";
+        }
+
+        if (!empty($filters['max_price'])) {
+            $query .= " AND t.price <= ?";
+            $params[] = $filters['max_price'];
+        }
+
+        if (!empty($filters['departure_date'])) {
+            $query .= " AND d.start_date >= ?";
+            $params[] = $filters['departure_date'];
+        }
+
+        $query .= " ORDER BY t.tour_id DESC";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute($params);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    // =========================
+// 📌 LẤY DEPARTURE CHO MODAL
+// =========================
+    public function getDeparturesByTour($tour_id)
+    {
+        $query = "SELECT * FROM departures 
+              WHERE tour_id = :tour_id
+                AND status = 'upcoming'
+                AND available_seats > 0
+                AND start_date >= CURDATE()
+              ORDER BY start_date ASC";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':tour_id', $tour_id, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
 ?>

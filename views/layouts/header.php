@@ -89,7 +89,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
     <nav class="navbar navbar-expand-lg navbar-light navbar-custom sticky-top shadow-sm">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="../public/index.php">
+            <a class="navbar-brand d-flex align-items-center" href="index.php">
                 <i class="bi bi-globe-americas me-2"></i> TravelVN
             </a>
 
@@ -102,7 +102,7 @@ if (session_status() === PHP_SESSION_NONE) {
                 <ul class="navbar-nav ms-auto align-items-center">
 
                     <li class="nav-item">
-                        <a class="nav-link nav-link-custom" href="../views/tours.php">
+                        <a class="nav-link nav-link-custom" href="index.php?action=tours">
                             <i class="bi bi-map me-1"></i> Khám phá Tours
                         </a>
                     </li>
@@ -117,7 +117,7 @@ if (session_status() === PHP_SESSION_NONE) {
                         <?php if ($_SESSION['user']['role'] == 'tour_manager'): ?>
                             <li class="nav-item">
                                 <a class="nav-link nav-link-custom fw-semibold text-warning"
-                                    href="../public/manager.php?action=dashboard">
+                                    href="manager.php?action=dashboard">
                                     <i class="bi bi-gear-fill me-1"></i> Quản lý
                                 </a>
                             </li>
@@ -125,11 +125,12 @@ if (session_status() === PHP_SESSION_NONE) {
                         <?php elseif ($_SESSION['user']['role'] == 'guide'): ?>
                             <li class="nav-item">
                                 <a class="nav-link nav-link-custom fw-semibold text-success"
-                                    href="../public/guide.php?action=schedule"> <i class="bi bi-briefcase-fill me-1"></i> Công
+                                    href="guide.php?action=schedule"> <i class="bi bi-briefcase-fill me-1"></i> Công
                                     việc
                                 </a>
                             </li>
                         <?php endif; ?>
+                        
                         <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] == 'admin'): ?>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle text-danger fw-bold" href="#" role="button"
@@ -138,12 +139,12 @@ if (session_status() === PHP_SESSION_NONE) {
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end shadow">
                                     <li>
-                                        <a class="dropdown-item" href="../public/admin.php">
+                                        <a class="dropdown-item" href="admin.php">
                                             <i class="bi bi-people me-2"></i> Quản lý User
                                         </a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" href="../public/manager.php?action=dashboard">
+                                        <a class="dropdown-item" href="manager.php?action=dashboard">
                                             <i class="bi bi-briefcase me-2"></i> Quản lý Tour
                                         </a>
                                     </li>
@@ -152,28 +153,29 @@ if (session_status() === PHP_SESSION_NONE) {
                         <?php endif; ?>
 
                     <?php endif; ?>
+                    
                     <?php if (isset($_SESSION['user'])): ?>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle user-dropdown-toggle" href="#" role="button"
                                 data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-person-circle me-1"></i> <?= htmlspecialchars($_SESSION['user']['name']) ?>
+                                <i class="bi bi-person-circle me-1"></i> <?= htmlspecialchars($_SESSION['user']['full_name'] ?? 'Người dùng') ?>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
-                                <li><a class="dropdown-item py-2" href="../views/profile.php"><i
+                                <li><a class="dropdown-item py-2" href="index.php?action=profile"><i
                                             class="bi bi-person me-2"></i>Tài khoản của tôi</a></li>
-                                <li><a class="dropdown-item py-2" href="../views/my_booking.php"><i
+                                <li><a class="dropdown-item py-2" href="index.php?action=myBookings"><i
                                             class="bi bi-bag-check me-2"></i>Chuyến đi của tôi </a></li>
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
-                                <li><a class="dropdown-item py-2 text-danger" href="../controllers/logout.php"><i
+                                <li><a class="dropdown-item py-2 text-danger" href="index.php?action=logout"><i
                                             class="bi bi-box-arrow-right me-2"></i>Đăng xuất</a></li>
                             </ul>
                         </li>
                     <?php else: ?>
                         <li class="nav-item d-flex gap-2 mt-3 mt-lg-0">
-                            <a class="btn-login" href="../views/login.php">Đăng nhập</a>
-                            <a class="btn-register" href="../views/register.php">Đăng ký</a>
+                            <a class="btn-login" href="index.php?action=login">Đăng nhập</a>
+                            <a class="btn-register" href="index.php?action=register">Đăng ký</a>
                         </li>
                     <?php endif; ?>
 

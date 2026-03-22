@@ -1,39 +1,21 @@
 <?php
-
-require_once '../config/database.php';
-
-$db = (new Database())->connect();
-
-$tour_id = $_GET['tour_id'] ?? 0;
-$departure_id = $_GET['departure_id'] ?? 0;
-
-// 1. Lấy thông tin Tour
-$stmtTour = $db->prepare("SELECT * FROM tours WHERE tour_id = ? AND status = 'active'");
-$stmtTour->execute([$tour_id]);
-$detail = $stmtTour->fetch(PDO::FETCH_ASSOC);
-
-// 2. Lấy thông tin Lịch khởi hành
-$stmtDep = $db->prepare("SELECT * FROM departures WHERE departure_id = ? AND tour_id = ?");
-$stmtDep->execute([$departure_id, $tour_id]);
-$departure = $stmtDep->fetch(PDO::FETCH_ASSOC);
-
-// Nếu không hợp lệ, quay về trang chi tiết
-if (!$detail || !$departure) {
-    echo "<div class='container mt-5 text-center'>
-            <h2 class='fw-bold mt-5 text-muted'>Thông tin đặt tour không hợp lệ</h2>
+// Kiểm tra an toàn: Nếu không có dữ liệu từ Controller truyền sang thì báo lỗi
+if (empty($detail) || empty($departure)) {
+    echo "<div class='container mt-5 text-center' style='min-height: 50vh;'>
+            <h2 class='fw-bold text-muted'>Thông tin đặt tour không hợp lệ</h2>
             <p>Vui lòng chọn lại ngày khởi hành từ trang chi tiết tour.</p>
-            <a href='tour_detail.php?id={$tour_id}' class='btn btn-primary mt-3'>Quay lại</a>
+            <a href='index.php?action=tours' class='btn btn-primary mt-3'>Quay lại danh sách</a>
           </div>";
     exit;
 }
 
-// Tự động lấy thông tin user nếu đã đăng nhập
-$userName = $_SESSION['user']['name'] ?? '';
+// Tự động lấy thông tin user từ Session nếu đã đăng nhập
+$userName = $_SESSION['user']['full_name'] ?? '';
 $userEmail = $_SESSION['user']['email'] ?? '';
-$userPhone = $_SESSION['user']['phone'] ?? ''; // Giả sử có lưu phone trong session
+$userPhone = $_SESSION['user']['phone'] ?? '';
 ?>
 
-<?php include './layouts/header.php'; ?>
+<?php include 'layouts/header.php'; ?>
 
 <style>
     :root {
@@ -158,143 +140,105 @@ $userPhone = $_SESSION['user']['phone'] ?? ''; // Giả sử có lưu phone tron
 </style>
 
 <div class="container mt-4 mb-5">
-    <nav aria-label="breadcrumb" class="mb-4">
+    <nav aria-label="breadcrumb" class="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="../public/index.php" class="text-decoration-none text-muted">Trang
-                    chủ</a></li>
-            <li class="breadcrumb-item"><a href="tour_detail.php?id=<?= $tour_id ?>"
-                    class="text-decoration-none text-muted">Chi tiết tour</a></li>
+            <li class="breadcrumb-item"><a href="index.php" class="text-decoration-none text-muted">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a href="index.php?action=detail&id=<?= $detail['tour_id'] ?>" class="text-decoration-none text-muted">Chi tiết tour</a></li>
             <li class="breadcrumb-item active fw-bold" aria-current="page">Xác nhận đặt chỗ</li>
         </ol>
     </nav>
 
     <h2 class="fw-bold mb-4 text-dark">Thanh toán & Đặt chỗ</h2>
 
-    <form action="../controllers/process_booking.php" method="POST">
+    <form action="index.php?action=confirmBooking" method="POST">
         <input type="hidden" name="tour_id" value="<?= $detail['tour_id']; ?>">
         <input type="hidden" name="departure_id" value="<?= $departure['departure_id']; ?>">
-        
 
         <div class="row g-4">
             <div class="col-lg-7">
-
                 <div class="checkout-card">
-                    <h4 class="section-title"><i class="bi bi-person-lines-fill text-primary"></i> Thông tin liên hệ
-                    </h4>
-
+                    <h4 class="section-title"><i class="bi bi-person-lines-fill text-primary"></i> Thông tin liên hệ</h4>
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Họ và tên <span class="text-danger">*</span></label>
-                        <input type="text" name="customer_name" class="form-control"
-                            value="<?= htmlspecialchars($userName) ?>" placeholder="Nhập họ tên đầy đủ" required>
+                        <input type="text" name="customer_name" class="form-control" value="<?= htmlspecialchars($userName) ?>" placeholder="Nhập họ tên đầy đủ" required>
                     </div>
-
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Email <span class="text-danger">*</span></label>
-                            <input type="email" name="email" class="form-control"
-                                value="<?= htmlspecialchars($userEmail) ?>" placeholder="example@email.com" required>
+                            <input type="email" name="email" class="form-control" value="<?= htmlspecialchars($userEmail) ?>" placeholder="example@email.com" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold">Số điện thoại <span
-                                    class="text-danger">*</span></label>
-                            <input type="text" name="phone" class="form-control"
-                                value="<?= htmlspecialchars($userPhone) ?>" placeholder="09xxxxxxx" required>
+                            <label class="form-label fw-semibold">Số điện thoại <span class="text-danger">*</span></label>
+                            <input type="text" name="phone" class="form-control" value="<?= htmlspecialchars($userPhone) ?>" placeholder="09xxxxxxx" required>
                         </div>
                     </div>
                 </div>
 
                 <div class="checkout-card">
                     <h4 class="section-title"><i class="bi bi-people-fill text-primary"></i> Hành khách</h4>
-
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Số lượng người tham gia <span
-                                class="text-danger">*</span></label>
-                        <input type="number" id="people" name="people"
-                            class="form-control form-control-lg text-center fw-bold" style="max-width: 150px;" value="1"
-                            min="1" max="<?= $departure['available_seats'] ?>" required>
+                        <label class="form-label fw-semibold">Số lượng người tham gia <span class="text-danger">*</span></label>
+                        <input type="number" id="people" name="people" class="form-control form-control-lg text-center fw-bold" style="max-width: 150px;" value="1" min="1" max="<?= $departure['available_seats'] ?>" required>
                         <div class="form-text text-danger mt-2">
-                            <i class="bi bi-info-circle me-1"></i>Chuyến đi này hiện chỉ còn
-                            <strong><?= $departure['available_seats'] ?></strong> chỗ trống.
+                            <i class="bi bi-info-circle me-1"></i>Chuyến đi này hiện chỉ còn <strong><?= $departure['available_seats'] ?></strong> chỗ trống.
                         </div>
                     </div>
                 </div>
 
                 <div class="checkout-card">
                     <h4 class="section-title"><i class="bi bi-pencil-square text-primary"></i> Yêu cầu đặc biệt</h4>
-                    <textarea name="note" class="form-control" rows="3"
-                        placeholder="Ví dụ: Dị ứng thức ăn, yêu cầu phòng đôi... (Tùy chọn)"></textarea>
+                    <textarea name="note" class="form-control" rows="3" placeholder="Ví dụ: Dị ứng thức ăn, yêu cầu phòng đôi..."></textarea>
                 </div>
+
                 <div class="checkout-card">
-                    <h4 class="section-title">
-                        <i class="bi bi-credit-card text-primary"></i> Phương thức thanh toán
-                    </h4>
-
+                    <h4 class="section-title"><i class="bi bi-credit-card text-primary"></i> Phương thức thanh toán</h4>
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="payment_method" value="cod" required>
-                        <label class="form-check-label">
-                            Thanh toán khi đi (COD)
-                        </label>
+                        <input class="form-check-input" type="radio" name="payment_method" value="cod" checked required>
+                        <label class="form-check-label">Thanh toán khi đi (COD)</label>
                     </div>
-
                     <div class="form-check">
                         <input class="form-check-input" type="radio" name="payment_method" value="qr">
-                        <label class="form-check-label">
-                            Chuyển khoản QR
-                        </label>
+                        <label class="form-check-label">Chuyển khoản QR</label>
                     </div>
                 </div>
-
             </div>
 
             <div class="col-lg-5">
                 <div class="summary-card">
-                    <img src="<?= !empty($detail['image']) ? '../public/uploads/' . $detail['image'] : 'https://images.unsplash.com/photo-1501785888041-af3ef285b470' ?>"
-                        class="summary-img" alt="Tour image">
-
+                    <img src="<?= !empty($detail['image']) ? '../public/uploads/' . $detail['image'] : 'https://images.unsplash.com/photo-1501785888041-af3ef285b470' ?>" class="summary-img" alt="Tour image">
                     <div class="summary-body">
                         <h4 class="tour-name"><?= htmlspecialchars($detail['tour_name']); ?></h4>
-
                         <div class="summary-item border-bottom pb-2">
                             <span><i class="bi bi-geo-alt me-2"></i>Điểm đến:</span>
                             <strong><?= htmlspecialchars($detail['destination']); ?></strong>
                         </div>
-
                         <div class="summary-item border-bottom pb-2 mt-2">
                             <span><i class="bi bi-calendar-event me-2"></i>Khởi hành:</span>
-                            <strong
-                                class="text-primary"><?= date("d/m/Y", strtotime($departure['start_date'])) ?></strong>
+                            <strong class="text-primary"><?= date("d/m/Y", strtotime($departure['start_date'])) ?></strong>
                         </div>
-
                         <div class="summary-item border-bottom pb-2 mt-2">
                             <span><i class="bi bi-cash me-2"></i>Đơn giá:</span>
                             <strong><?= number_format($detail['price']); ?> đ/khách</strong>
                         </div>
-
                         <div class="summary-item mt-2">
                             <span><i class="bi bi-people me-2"></i>Số lượng:</span>
                             <strong id="display-people">1 khách</strong>
                         </div>
-
                         <div class="total-price-box">
                             <div class="total-label mb-1">Tổng thanh toán</div>
-                            <div class="total-amount" id="total">
-                                <?= number_format($detail['price']); ?> <span style="font-size: 1.2rem;">đ</span>
-                            </div>
+                            <div class="total-amount" id="total"><?= number_format($detail['price']); ?> <span style="font-size: 1.2rem;">đ</span></div>
                         </div>
-
                         <button type="submit" class="btn btn-submit w-100 mt-4 shadow-sm">
-                            <i class="bi bi-check-circle me-1"></i> Xác nhận & Thanh toán
+                            <i class="bi bi-check-circle me-1"></i> Xác nhận đặt tour
                         </button>
                     </div>
                 </div>
             </div>
-
         </div>
     </form>
 </div>
 
 <script>
-    // Lấy giá trị cơ bản từ PHP
     const pricePerPerson = <?= $detail['price']; ?>;
     const maxSeats = <?= $departure['available_seats']; ?>;
 
@@ -305,7 +249,6 @@ $userPhone = $_SESSION['user']['phone'] ?? ''; // Giả sử có lưu phone tron
     peopleInput.addEventListener("input", function () {
         let people = parseInt(this.value);
 
-        // Ràng buộc số lượng không được vượt quá số ghế hoặc nhỏ hơn 1
         if (isNaN(people) || people < 1) {
             people = 1;
         } else if (people > maxSeats) {
@@ -314,13 +257,10 @@ $userPhone = $_SESSION['user']['phone'] ?? ''; // Giả sử có lưu phone tron
             this.value = maxSeats;
         }
 
-        // Cập nhật text số khách
         displayPeople.innerHTML = people + " khách";
-
-        // Tính và format lại tổng tiền
         let total = pricePerPerson * people;
         totalBox.innerHTML = total.toLocaleString('vi-VN') + ' <span style="font-size: 1.2rem;">đ</span>';
     });
 </script>
 
-<?php include './layouts/footer.php'; ?>
+<?php include 'layouts/footer.php'; ?>

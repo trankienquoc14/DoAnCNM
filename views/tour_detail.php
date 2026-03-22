@@ -1,34 +1,14 @@
-<?php
-require_once '../config/database.php';
-
-$db = (new Database())->connect();
-$id = $_GET['id'] ?? 0;
-
-// 1. Lấy thông tin Tour + Tên đối tác (Partner)
-$stmtTour = $db->prepare("SELECT t.*, p.partner_name FROM tours t LEFT JOIN partners p ON t.partner_id = p.partner_id WHERE t.tour_id = ? AND t.status = 'active'");
-$stmtTour->execute([$id]);
-$detail = $stmtTour->fetch(PDO::FETCH_ASSOC);
-
-if (!$detail) {
+<?php 
+// Kiểm tra nếu không có dữ liệu tour
+if (empty($detail)) {
     echo "<div class='container mt-5 text-center'>
             <h2 class='fw-bold mt-5 text-muted'>Tour không tồn tại hoặc đã ngừng hoạt động</h2>
-            <a href='tours.php' class='btn btn-primary mt-3'>Quay lại danh sách</a>
+            <a href='index.php?action=tours' class='btn btn-primary mt-3'>Quay lại danh sách</a>
           </div>";
     exit;
 }
-
-// 2. Lấy lịch trình chi tiết từng ngày
-$stmtSchedule = $db->prepare("SELECT * FROM tour_schedules WHERE tour_id = ? ORDER BY day_number ASC");
-$stmtSchedule->execute([$id]);
-$schedules = $stmtSchedule->fetchAll(PDO::FETCH_ASSOC);
-
-// 3. Lấy danh sách các ngày khởi hành (chỉ lấy ngày chưa qua)
-$stmtDepartures = $db->prepare("SELECT * FROM departures WHERE tour_id = ? AND start_date >= CURDATE() ORDER BY start_date ASC");
-$stmtDepartures->execute([$id]);
-$departures = $stmtDepartures->fetchAll(PDO::FETCH_ASSOC);
+include 'layouts/header.php'; 
 ?>
-
-<?php include 'layouts/header.php'; ?>
 
 <style>
     :root {
@@ -127,7 +107,7 @@ $departures = $stmtDepartures->fetchAll(PDO::FETCH_ASSOC);
         font-size: 1.1rem;
     }
 
-    /* --- SERVICES (Bao gồm / Không bao gồm) --- */
+    /* --- SERVICES --- */
     .service-list {
         list-style: none;
         padding-left: 0;
@@ -211,9 +191,27 @@ $departures = $stmtDepartures->fetchAll(PDO::FETCH_ASSOC);
         transform: translateY(-2px);
         color: white;
     }
+
+    .btn-login-require {
+        background-color: #ffc107;
+        color: #000;
+        font-weight: 700;
+        border-radius: 12px;
+        padding: 14px;
+        text-decoration: none;
+        display: block;
+        text-align: center;
+        transition: 0.3s;
+    }
+
+    .btn-login-require:hover {
+        background-color: #e0a800;
+        color: #000;
+    }
+
     select option:disabled {
-    color: #999;
-}
+        color: #999;
+    }
 </style>
 
 <div class="hero-detail"
@@ -298,7 +296,7 @@ $departures = $stmtDepartures->fetchAll(PDO::FETCH_ASSOC);
 
             <h4 class="fw-bold mt-5 mb-4">Lịch trình chi tiết</h4>
 
-            <?php if (count($schedules) > 0): ?>
+            <?php if (!empty($schedules) && count($schedules) > 0): ?>
                 <div class="accordion" id="itineraryAccordion">
                     <?php foreach ($schedules as $index => $sched): ?>
                         <div class="accordion-item shadow-sm border-0 mb-3 rounded-3 overflow-hidden">
@@ -336,13 +334,14 @@ $departures = $stmtDepartures->fetchAll(PDO::FETCH_ASSOC);
                     <?= number_format($detail['price']); ?> <span>VNĐ/khách</span>
                 </div>
 
-                <form action="booking.php" method="GET">
+                <form action="index.php" method="GET">
+                    <input type="hidden" name="action" value="booking">
                     <input type="hidden" name="tour_id" value="<?= $detail['tour_id']; ?>">
 
                     <div class="mb-4">
                         <label class="form-label fw-bold text-dark"><i class="bi bi-calendar-event me-2"></i>Chọn ngày
                             khởi hành</label>
-                        <?php if (count($departures) > 0): ?>
+                        <?php if (!empty($departures) && count($departures) > 0): ?>
                             <select name="departure_id" class="form-select form-select-lg" required>
                                 <option value="" disabled selected>-- Chọn ngày đi --</option>
 
@@ -359,9 +358,16 @@ $departures = $stmtDepartures->fetchAll(PDO::FETCH_ASSOC);
                         <?php endif; ?>
                     </div>
 
-                    <button type="submit" class="btn btn-book-now w-100 mb-3" <?= count($departures) == 0 ? 'disabled' : '' ?>>
-                        Đặt tour ngay
-                    </button>
+                    <?php if (isset($_SESSION['user'])): ?>
+                        <button type="submit" class="btn btn-book-now w-100 mb-3" <?= empty($departures) ? 'disabled' : '' ?>>
+                            Đặt tour ngay
+                        </button>
+                    <?php else: ?>
+                        <a href="index.php?action=login" class="btn btn-login-require w-100 mb-3 fw-bold">
+                            <i class="bi bi-box-arrow-in-right me-2"></i> Đăng nhập để đặt tour
+                        </a>
+                        <p class="text-center small text-muted">Vui lòng đăng nhập để tiếp tục đặt tour.</p>
+                    <?php endif; ?>
                 </form>
 
                 <div class="text-center mt-3 border-top pt-3">
@@ -374,19 +380,14 @@ $departures = $stmtDepartures->fetchAll(PDO::FETCH_ASSOC);
     </div>
     <script>
         window.onload = function () {
-           $id = $_GET['id'] ?? 0;
-           $bookMode = $_GET['book'] ?? 0;
+           const bookMode = "<?= $_GET['book'] ?? '0' ?>";
 
-            if (bookMode == "1") {
+            if (bookMode === "1") {
                 const section = document.getElementById("bookingSection");
 
                 if (section) {
-                    // Scroll xuống
                     section.scrollIntoView({ behavior: "smooth", block: "center" });
-
-                    // Highlight nhẹ
                     section.style.boxShadow = "0 0 0 4px rgba(1,148,243,0.2)";
-
                     setTimeout(() => {
                         section.style.boxShadow = "";
                     }, 2000);

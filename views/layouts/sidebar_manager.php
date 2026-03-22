@@ -51,10 +51,24 @@
         transition: all 0.2s ease;
     }
 
-    .admin-menu-item i { font-size: 1.25rem; transition: 0.2s; }
-    .admin-menu-item:hover { background-color: var(--admin-bg, #f1f5f9); color: var(--admin-text-main, #0f172a); }
-    .admin-menu-item.active { background-color: var(--admin-primary-light, #eef7ff); color: var(--admin-primary, #0194f3); }
-    .admin-menu-item.active i { color: var(--admin-primary, #0194f3); }
+    .admin-menu-item i {
+        font-size: 1.25rem;
+        transition: 0.2s;
+    }
+
+    .admin-menu-item:hover {
+        background-color: var(--admin-bg, #f1f5f9);
+        color: var(--admin-text-main, #0f172a);
+    }
+
+    .admin-menu-item.active {
+        background-color: var(--admin-primary-light, #eef7ff);
+        color: var(--admin-primary, #0194f3);
+    }
+
+    .admin-menu-item.active i {
+        color: var(--admin-primary, #0194f3);
+    }
 </style>
 
 <div class="col-lg-3">
@@ -63,29 +77,42 @@
             <div class="admin-avatar">
                 <?= mb_strtoupper(mb_substr($userName ?? 'A', 0, 1, 'UTF-8')) ?>
             </div>
-            <h5 class="fw-bold mb-1 text-dark"><?= htmlspecialchars($userName ?? 'Quản trị viên') ?></h5>
+            <h5 class="fw-bold mb-1 text-dark">
+                <?php
+                // Ưu tiên 1: Biến truyền từ Controller
+                // Ưu tiên 2: Tên từ Session (Tên thật của bạn)
+                // Ưu tiên 3: Chữ mặc định
+                echo htmlspecialchars($userName ?? $_SESSION['user']['full_name'] ?? 'Quản trị viên');
+                ?>
+            </h5>
             <span class="badge bg-light text-primary border border-primary">Admin System</span>
         </div>
 
         <div class="admin-menu">
             <?php $activeMenu = $activeMenu ?? 'dashboard'; // Mặc định là dashboard nếu không khai báo ?>
-            
-            <a href="../public/manager.php?action=dashboard" class="admin-menu-item <?= ($activeMenu === 'dashboard') ? 'active' : '' ?>">
+
+            <a href="../public/manager.php?action=dashboard"
+                class="admin-menu-item <?= ($activeMenu === 'dashboard') ? 'active' : '' ?>">
                 <i class="bi bi-grid-1x2-fill"></i> Tổng quan
             </a>
-            <a href="../public/manager.php?action=tours" class="admin-menu-item <?= ($activeMenu === 'tours') ? 'active' : '' ?>">
+            <a href="../public/manager.php?action=tours"
+                class="admin-menu-item <?= ($activeMenu === 'tours') ? 'active' : '' ?>">
                 <i class="bi bi-map"></i> Quản lý Tour
             </a>
-            <a href="../public/manager.php?action=departures" class="admin-menu-item <?= ($activeMenu === 'departures') ? 'active' : '' ?>">
+            <a href="../public/manager.php?action=departures"
+                class="admin-menu-item <?= ($activeMenu === 'departures') ? 'active' : '' ?>">
                 <i class="bi bi-calendar2-week"></i> Vận hành & Lịch trình
             </a>
-            <a href="../public/manager.php?action=bookings" class="admin-menu-item <?= ($activeMenu === 'bookings') ? 'active' : '' ?>">
+            <a href="../public/manager.php?action=bookings"
+                class="admin-menu-item <?= ($activeMenu === 'bookings') ? 'active' : '' ?>">
                 <i class="bi bi-receipt-cutoff"></i> Đơn đặt (Bookings)
             </a>
-            <a href="../public/manager.php?action=partners" class="admin-menu-item <?= ($activeMenu === 'partners') ? 'active' : '' ?>">
+            <a href="../public/manager.php?action=partners"
+                class="admin-menu-item <?= ($activeMenu === 'partners') ? 'active' : '' ?>">
                 <i class="bi bi-buildings"></i> Đối tác dịch vụ
             </a>
-            <a href="../public/manager.php?action=report" class="admin-menu-item <?= ($activeMenu === 'report') ? 'active' : '' ?>">
+            <a href="../public/manager.php?action=report"
+                class="admin-menu-item <?= ($activeMenu === 'report') ? 'active' : '' ?>">
                 <i class="bi bi-graph-up-arrow"></i> Báo cáo doanh thu
             </a>
         </div>
