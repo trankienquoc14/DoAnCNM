@@ -1,22 +1,25 @@
 <?php
-class Database {
+class Database
+{
     private $host = "localhost";
     private $db_name = "quanlydulich";
     private $username = "root";
     private $password = "";
 
-    public function connect(){
+    public function connect()
+    {
         $conn = null;
 
-        try{
+        try {
             $conn = new PDO(
-                "mysql:host=".$this->host.";dbname=".$this->db_name,
+                "mysql:host=" . $this->host . ";dbname=" . $this->db_name,
                 $this->username,
                 $this->password
             );
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        }catch(PDOException $e){
-            echo "Connection error: ".$e->getMessage();
+            $conn->exec("set names utf8mb4");
+        } catch (PDOException $e) {
+            echo "Connection error: " . $e->getMessage();
         }
 
         return $conn;

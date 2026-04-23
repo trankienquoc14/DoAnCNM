@@ -1,10 +1,12 @@
-<?php 
+<?php
 // Kiểm tra nếu Controller chưa truyền dữ liệu sang thì báo lỗi
 if (empty($payment)) {
     echo "<div class='text-center mt-5'><h3>Không tìm thấy giao dịch thanh toán</h3></div>";
     exit;
 }
-include 'layouts/header.php'; 
+include 'layouts/header.php';
+// Tính toán thời gian đếm ngược không bị reset khi reload
+$payment_id = $payment['payment_id'] ?? $_GET['payment_id'] ?? 0;
 ?>
 
 <style>
@@ -171,7 +173,7 @@ include 'layouts/header.php';
                     </div>
                     <div class="info-row">
                         <span class="info-label">Ngân hàng</span>
-                        <span class="info-value">MB Bank</span>
+                        <span class="info-value">Sacombank</span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">Số tài khoản</span>
@@ -199,42 +201,112 @@ include 'layouts/header.php';
                     </div>
                 </div>
 
-                <form method="POST" action="index.php?action=confirmPayment">
-                    <input type="hidden" name="payment_id" value="<?= $payment_id ?>">
-                    <button type="submit" class="btn-confirm">
-                        <i class="bi bi-check-circle-fill"></i> Tôi đã hoàn tất chuyển khoản
-                    </button>
-                </form>
+                <div class="text-center mt-4 border-top pt-3">
+                    <h5 class="text-danger fw-bold mb-3">
+                        Vui lòng thanh toán trong: <span id="countdown-timer">15:00</span>
+                    </h5>
 
-                <p class="instruction">
-                    <i class="bi bi-info-circle me-1"></i> Hệ thống sẽ tự động duyệt sau khi nhận được tiền (từ 1 - 5
-                    phút).
-                </p>
+                    <div id="payment-waiting" class="mb-3">
+                        <div class="spinner-border text-primary" role="status" style="width: 2rem; height: 2rem;">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2 text-primary fw-bold">Hệ thống đang tự động chờ nhận tiền...</p>
+                        <p class="text-muted small">Trang sẽ tự động chuyển hướng ngay khi nhận được thanh toán.</p>
+                    </div>
+                </div>
+
+                <form method="POST" action="index.php?action=confirmPayment">
+                    <!-- <input type="hidden" name="payment_id" value="<?= $payment_id ?>">
+                    <button type="submit" class="btn-confirm bg-secondary"
+                        onclick="return confirm('Bạn chắc chắn đã chuyển khoản thành công? Vui lòng chỉ bấm nút này nếu sau 5 phút hệ thống vẫn chưa tự động chuyển trang.');">
+                        <i class="bi bi-check-circle-fill"></i> Tôi đã chuyển khoản (Báo cáo thủ công)
+                    </button> -->
+                </form>
             </div>
         </div>
 
         <div class="text-center mt-3">
-            <a href="index.php?action=myBookings" class="text-decoration-none text-muted"><i class="bi bi-arrow-left me-1"></i> Quay
+            <a href="index.php?action=myBookings" class="text-decoration-none text-muted"><i
+                    class="bi bi-arrow-left me-1"></i> Quay
                 lại danh sách đơn</a>
         </div>
     </div>
 </div>
 
 <script>
+    // 1. Hàm sao chép văn bản (Giữ nguyên logic của bạn)
     function copyText(elementId, isAmount = false) {
         let textToCopy = document.getElementById(elementId).innerText;
-
-        // Nếu là số tiền, loại bỏ dấu phẩy trước khi copy để dán vào app ngân hàng không bị lỗi
         if (isAmount) {
             textToCopy = textToCopy.replace(/,/g, '');
         }
-
         navigator.clipboard.writeText(textToCopy).then(() => {
             alert('Đã sao chép: ' + textToCopy);
         }).catch(err => {
             console.error('Lỗi sao chép: ', err);
         });
     }
+
+    // --- ĐƯA CÁC LOGIC DƯỚI ĐÂY RA NGOÀI ĐỂ TỰ CHẠY KHI LOAD TRANG ---
+
+    // 2. Lấy ID thanh toán từ PHP
+    const currentPaymentId = <?= json_encode($payment_id) ?>;
+
+    // 3. Hàm kiểm tra trạng thái tự động (Polling)
+    function checkStatus() {
+        fetch(`index.php?action=checkPaymentStatus&payment_id=${currentPaymentId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'paid') {
+                    // Xóa vòng lặp khi thành công
+                    clearInterval(pollingInterval);
+                    alert('Ting ting! Hệ thống đã nhận được thanh toán. Chúc bạn có chuyến đi vui vẻ!');
+                    window.location.href = 'index.php?action=myBookings';
+                }
+            })
+            .catch(error => console.log('Đang kết nối server...'));
+    }
+
+    // Thiết lập vòng lặp: Cứ mỗi 3 giây kiểm tra 1 lần
+    const pollingInterval = setInterval(checkStatus, 3000);
+
+    // --- 4. HÀM ĐẾM NGƯỢC THÔNG MINH (KHÔNG RESET KHI RELOAD) ---
+    const STORAGE_KEY = `payment_expire_${currentPaymentId}`;
+    let expireTime = localStorage.getItem(STORAGE_KEY);
+
+    // Nếu chưa có thời gian hết hạn trong máy khách, thì mới tạo mới (15 phút từ bây giờ)
+    if (!expireTime) {
+        expireTime = Date.now() + (15 * 60 * 1000);
+        localStorage.setItem(STORAGE_KEY, expireTime);
+    }
+
+    const timerDisplay = document.getElementById('countdown-timer');
+
+    const countdown = setInterval(function () {
+        let now = Date.now();
+        let timeRemaining = Math.floor((expireTime - now) / 1000);
+
+        if (timeRemaining <= 0) {
+            clearInterval(countdown);
+            clearInterval(pollingInterval);
+            localStorage.removeItem(STORAGE_KEY); // Xóa bộ nhớ khi hết hạn
+            alert('Đã hết thời gian thanh toán!');
+            window.location.href = 'index.php?action=myBookings';
+            return;
+        }
+
+        let minutes = Math.floor(timeRemaining / 60);
+        let seconds = timeRemaining % 60;
+
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+        seconds = seconds < 10 ? '0' + seconds : seconds;
+
+        timerDisplay.textContent = minutes + ":" + seconds;
+    }, 1000);
+
+    // Xóa localStorage khi thanh toán thành công (Sửa trong hàm checkStatus)
+    // Trong hàm checkStatus, chỗ data.status === 'paid', bạn thêm dòng:
+    // localStorage.removeItem(STORAGE_KEY);
 </script>
 
 <?php include 'layouts/footer.php'; ?>

@@ -9,6 +9,9 @@ class TourController
     public function __construct()
     {
         $this->db = (new Database())->connect();
+        // --- THÊM DÒNG NÀY ---
+        // Mỗi khi ai đó vào web xem tour, hệ thống sẽ tự động quét và dọn dẹp ghế bị treo
+        $this->autoCancelExpiredBookings();
     }
 
     public function home()
@@ -126,6 +129,17 @@ class TourController
     }
     public function booking()
     {
+        // --- KIỂM TRA ĐĂNG NHẬP TRƯỚC KHI XEM TRANG ---
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        if (!isset($_SESSION['user'])) {
+            echo "<script>
+                    alert('Bạn cần đăng nhập để có thể đặt tour!'); 
+                    window.location.href='index.php?action=login';
+                  </script>";
+            exit;
+        }
         $tour_id = $_GET['tour_id'] ?? 0;
         $departure_id = $_GET['departure_id'] ?? 0;
 
@@ -155,6 +169,22 @@ class TourController
             $note = $_POST['note'] ?? '';
             $payment_method = $_POST['payment_method'] ?? 'cod';
 
+            // --- BƯỚC QUAN TRỌNG: TRỪ SỐ CHỖ TRỐNG TRƯỚC ---
+            // Câu lệnh này chỉ trừ khi available_seats >= số người đặt (đảm bảo không bị âm số ghế)
+            $queryUpdateSeats = "UPDATE departures 
+                                 SET available_seats = available_seats - ? 
+                                 WHERE departure_id = ? AND available_seats >= ?";
+            $stmtUpdateSeats = $this->db->prepare($queryUpdateSeats);
+            $stmtUpdateSeats->execute([$people, $departure_id, $people]);
+
+            // Kiểm tra xem việc trừ chỗ có thành công không
+            if ($stmtUpdateSeats->rowCount() === 0) {
+                // Nếu rowCount = 0 nghĩa là đã hết chỗ hoặc không đủ số lượng người yêu cầu
+                echo "<script>alert('Rất tiếc, chuyến đi này đã hết chỗ hoặc không còn đủ số ghế trống!'); window.history.back();</script>";
+                exit;
+            }
+            // ------------------------------------------------
+
             // Lấy giá tour để tính tổng tiền
             $stmt = $this->db->prepare("SELECT price FROM tours WHERE tour_id = ?");
             $stmt->execute([$tour_id]);
@@ -163,7 +193,7 @@ class TourController
             $total_price = ($tour['price'] ?? 0) * $people;
             $user_id = $_SESSION['user']['user_id'] ?? 1; // Mặc định ID 1 nếu chưa đăng nhập
 
-            // 1. Lưu đơn hàng vào bảng bookings (Cột là: status)
+            // 1. Lưu đơn hàng vào bảng bookings
             $query = "INSERT INTO bookings (user_id, departure_id, customer_name, email, phone, number_of_people, total_price, note, status) 
                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending')";
             $stmtInsert = $this->db->prepare($query);
@@ -172,7 +202,7 @@ class TourController
             // Lấy ID của booking vừa tạo
             $booking_id = $this->db->lastInsertId();
 
-            // 2. Xử lý thanh toán vào bảng payments (Cột là: payment_status)
+            // 2. Xử lý thanh toán vào bảng payments
             if ($payment_method === 'qr') {
                 $transaction_code = "TXN" . time() . rand(100, 999);
                 $queryPay = "INSERT INTO payments (booking_id, amount, payment_method, payment_status, transaction_code) VALUES (?, ?, 'qr', 'pending', ?)";
@@ -254,7 +284,7 @@ class TourController
             LEFT JOIN payments p ON b.booking_id = p.booking_id
             WHERE b.booking_id = ? AND b.user_id = ?
         ");
-        
+
         $user_id = $_SESSION['user']['user_id'] ?? 1;
         $stmt->execute([$booking_id, $user_id]);
         $booking = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -269,13 +299,14 @@ class TourController
     // --- HÀM XỬ LÝ HỦY TOUR ---
     public function cancelBooking()
     {
-        if (session_status() === PHP_SESSION_NONE) session_start();
+        if (session_status() === PHP_SESSION_NONE)
+            session_start();
         if (!isset($_SESSION['user'])) {
             header("Location: index.php?action=login");
             exit;
         }
 
-        $booking_id = isset($_GET['booking_id']) ? (int)$_GET['booking_id'] : 0;
+        $booking_id = isset($_GET['booking_id']) ? (int) $_GET['booking_id'] : 0;
         $user_id = $_SESSION['user']['user_id'] ?? $_SESSION['user']['id'];
 
         // 1. ĐÃ SỬA LỖI SQL Ở ĐÂY: Xóa b.payment_method đi, chỉ giữ lại p.payment_status
@@ -301,7 +332,7 @@ class TourController
 
         // 2. Ràng buộc thời gian: Chỉ cho hủy trước 3 ngày
         $days_until_start = (strtotime($booking['start_date']) - time()) / (60 * 60 * 24);
-        
+
         if ($days_until_start < 3) {
             echo "<script>
                     alert('Đã qua thời hạn tự hủy tour (chỉ được hủy trước 3 ngày khởi hành). Vui lòng liên hệ Hotline 1900 1234 để được hỗ trợ.'); 
@@ -311,9 +342,19 @@ class TourController
         }
 
         // 3. Tiến hành Hủy đơn hàng
+        // 3. Tiến hành Hủy đơn hàng
         $stmtUpdate = $this->db->prepare("UPDATE bookings SET status = 'cancelled' WHERE booking_id = ?");
-        
+
         if ($stmtUpdate->execute([$booking_id])) {
+
+            // --- BẮT ĐẦU BỔ SUNG: HOÀN LẠI SỐ GHẾ VÀO BẢNG DEPARTURES ---
+            $queryRestoreSeats = "UPDATE departures 
+                                  SET available_seats = available_seats + (SELECT number_of_people FROM bookings WHERE booking_id = ?) 
+                                  WHERE departure_id = (SELECT departure_id FROM bookings WHERE booking_id = ?)";
+            $stmtRestore = $this->db->prepare($queryRestoreSeats);
+            $stmtRestore->execute([$booking_id, $booking_id]);
+            // --- KẾT THÚC BỔ SUNG ---
+
             // Nếu khách đã thanh toán, thông báo thêm vụ hoàn tiền
             if (isset($booking['payment_status']) && $booking['payment_status'] === 'paid') {
                 echo "<script>alert('Hủy tour thành công. Vì bạn đã thanh toán, nhân viên sẽ liên hệ để hoàn tiền trong 3-5 ngày làm việc.'); window.location.href='index.php?action=myBookings';</script>";
@@ -324,5 +365,37 @@ class TourController
             echo "<script>alert('Có lỗi hệ thống, vui lòng thử lại sau.'); window.location.href='index.php?action=myBookings';</script>";
         }
     }
-    
+    // --- HÀM TỰ ĐỘNG HỦY ĐƠN VÀ HOÀN GHẾ SAU 15 PHÚT ---
+    private function autoCancelExpiredBookings()
+    {
+        // 1. Tìm các booking 'pending' đã qua 15 phút (chỉ áp dụng cho thanh toán QR đang chờ)
+        // Lưu ý: Cột booking_date trong DB của bạn phải là kiểu DATETIME hoặc TIMESTAMP
+        $query = "SELECT b.booking_id, b.departure_id, b.number_of_people 
+                  FROM bookings b
+                  JOIN payments p ON b.booking_id = p.booking_id
+                  WHERE b.status = 'pending' 
+                  AND p.payment_method = 'qr' 
+                  AND p.payment_status = 'pending'
+                  AND b.booking_date <= (NOW() - INTERVAL 5 MINUTE)";
+
+        $stmt = $this->db->prepare($query);
+        $stmt->execute();
+        $expiredBookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // 2. Chạy vòng lặp để hủy và hoàn ghế cho từng đơn
+        foreach ($expiredBookings as $b) {
+            // Hoàn lại ghế vào bảng departures
+            $stmtRestore = $this->db->prepare("UPDATE departures SET available_seats = available_seats + ? WHERE departure_id = ?");
+            $stmtRestore->execute([$b['number_of_people'], $b['departure_id']]);
+
+            // Đổi trạng thái booking thành cancelled
+            $stmtCancelB = $this->db->prepare("UPDATE bookings SET status = 'cancelled', note = CONCAT(IFNULL(note,''), 'Đã hủy do hết thời gian thanh toán') WHERE booking_id = ?");
+            $stmtCancelB->execute([$b['booking_id']]);
+
+            // Đổi trạng thái payment thành cancelled
+            $stmtCancelP = $this->db->prepare("UPDATE payments SET payment_status = 'failed' WHERE booking_id = ?");
+            $stmtCancelP->execute([$b['booking_id']]);
+        }
+    }
+
 }
