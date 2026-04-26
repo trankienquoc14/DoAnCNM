@@ -5,8 +5,8 @@ class PaymentController
 {
     private $db;
     // --- CẤU HÌNH SEPAY ---
-    private $sepayToken = "CUBA1ZD6SPBMX9YBRLK8JJD40GJCS6RUF3WQKFYR2MON9VA10CZPSMQWNHKIZX7O";
-    private $accountNumber = "050134910132";
+    private $sepayToken = "";
+    private $accountNumber = "";
 
     public function __construct()
     {
