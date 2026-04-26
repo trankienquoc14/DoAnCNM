@@ -66,6 +66,7 @@ class PaymentController
         $amount = (int) $payment['amount'];
         $info = "THANHTOAN " . $payment_id;
         $qr_url = $this->createQR($amount, $info);
+        $account_no = $this->accountNumber;
 
         require __DIR__ . '/../views/payment.php';
     }

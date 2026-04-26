@@ -1,448 +1,347 @@
 <?php include 'layouts/header.php'; ?>
 
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
     :root {
-        --primary-color: #0194f3;
-        --accent-color: #ff5e1f;
-        --text-main: #1a202c;
-        --text-muted: #64748b;
-        --border-color: #e2e8f0;
+        --tvlk-blue: #0194f3;
+        --tvlk-dark-blue: #0770cd;
+        --tvlk-orange: #ff5e1f;
+        --tvlk-orange-hover: #e04d14;
+        --tvlk-bg: #f7f9fa;
+        --tvlk-text: #03121a;
+        --tvlk-gray: #687176;
+        --tvlk-border: #e1e8ee;
+        --radius-sm: 8px;
+        --radius-md: 16px;
+        --radius-lg: 24px;
     }
 
     body {
-        background-color: #f8fafc;
-        font-family: 'Inter', 'Segoe UI', sans-serif;
+        background-color: var(--tvlk-bg);
+        font-family: 'Inter', sans-serif;
+        color: var(--tvlk-text);
     }
+
+    /* --- BREADCRUMB --- */
+    .tour-breadcrumb { padding: 15px 0; font-size: 0.9rem; font-weight: 500; color: var(--tvlk-gray); }
+    .tour-breadcrumb a { color: var(--tvlk-blue); text-decoration: none; }
+    .tour-breadcrumb i { margin: 0 8px; font-size: 0.8rem; }
 
     /* --- HERO SECTION --- */
-    .hero-tours {
-        height: 420px;
-        background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1501785888041-af3ef285b470') center/cover no-repeat;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        color: white;
-        margin-bottom: 50px;
-        position: relative;
-    }
-
-    .hero-content-wrapper {
-        position: relative;
-        z-index: 2;
-        width: 100%;
-        max-width: 1000px;
-        padding: 0 20px;
-    }
-
-    .hero-title {
-        font-size: 3rem;
-        font-weight: 800;
-        text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        margin-bottom: 10px;
-    }
-
-    .hero-subtitle {
-        font-size: 1.15rem;
-        font-weight: 400;
-        opacity: 0.9;
+    .hero-tours-mini {
+        background: linear-gradient(135deg, var(--tvlk-blue), var(--tvlk-dark-blue));
+        padding: 40px 0;
         margin-bottom: 30px;
+        border-radius: var(--radius-md);
+        color: white;
     }
 
-    /* --- UNIFIED SEARCH BAR --- */
     .search-unified {
-        background: #ffffff;
-        border-radius: 50px;
-        padding: 10px;
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-        display: flex;
-        align-items: center;
-        max-width: 900px;
-        margin: 0 auto;
+        background: #ffffff; border-radius: 12px; padding: 6px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); display: flex; align-items: center; width: 100%;
     }
-
     .search-group {
-        display: flex;
-        align-items: center;
-        flex: 1;
-        padding: 5px 20px;
-        border-right: 1px solid var(--border-color);
-        transition: 0.3s;
+        display: flex; align-items: center; flex: 1; padding: 5px 15px;
+        border-right: 1px solid var(--tvlk-border);
     }
-
-    .search-group:hover {
-        background-color: #f8fafc;
-        border-radius: 30px;
-    }
-
-    .search-group i {
-        font-size: 1.4rem;
-        color: var(--primary-color);
-        margin-right: 12px;
-    }
-
-    .search-input-wrapper {
-        display: flex;
-        flex-direction: column;
-        text-align: left;
-        width: 100%;
-    }
-
-    .search-input-wrapper label {
-        font-size: 0.8rem;
-        font-weight: 700;
-        color: var(--text-main);
-        margin-bottom: 2px;
-        text-transform: uppercase;
-    }
-
-    .search-input-wrapper input {
-        border: none;
-        background: transparent;
-        padding: 0;
-        font-size: 0.95rem;
-        font-weight: 500;
-        color: var(--text-muted);
-        outline: none;
-        width: 100%;
-    }
-
-    input[type="date"]::-webkit-calendar-picker-indicator {
-        opacity: 0.5;
-        cursor: pointer;
-    }
-
+    .search-group:last-child { border-right: none; }
+    .search-group i { font-size: 1.2rem; color: var(--tvlk-blue); margin-right: 10px; }
+    .search-input-wrapper { display: flex; flex-direction: column; width: 100%; }
+    .search-input-wrapper label { font-size: 0.75rem; font-weight: 700; color: var(--tvlk-gray); margin-bottom: 2px; text-transform: uppercase;}
+    .search-input-wrapper input { border: none; background: transparent; padding: 0; font-size: 0.95rem; font-weight: 600; color: var(--tvlk-text); outline: none; width: 100%; }
     .btn-search-unified {
-        background-color: var(--accent-color);
-        color: white;
-        font-weight: 700;
-        font-size: 1.1rem;
-        border-radius: 50px;
-        padding: 15px 35px;
-        border: none;
-        transition: 0.3s;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin-left: 10px;
+        background-color: var(--tvlk-orange); color: white; font-weight: 700; font-size: 1rem;
+        border-radius: 8px; padding: 12px 25px; border: none; transition: 0.3s;
     }
+    .btn-search-unified:hover { background-color: var(--tvlk-orange-hover); }
 
-    .btn-search-unified:hover {
-        background-color: #e04d14;
-        transform: scale(1.02);
+    /* --- SIDEBAR FILTER --- */
+    .filter-sidebar {
+        background: white; border-radius: var(--radius-md);
+        border: 1px solid var(--tvlk-border); padding: 20px;
+        position: sticky; top: 20px;
     }
+    .filter-title { font-size: 1.1rem; font-weight: 800; color: var(--tvlk-text); margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--tvlk-bg); display: flex; justify-content: space-between; align-items: center; }
+    .filter-title span { color: var(--tvlk-blue); font-size: 0.85rem; cursor: pointer; font-weight: 600; }
+    
+    .filter-group { margin-bottom: 25px; }
+    .filter-group-title { font-size: 0.95rem; font-weight: 700; color: var(--tvlk-text); margin-bottom: 12px; }
+    .filter-checkbox { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; cursor: pointer; }
+    .filter-checkbox input { width: 18px; height: 18px; cursor: pointer; accent-color: var(--tvlk-blue); }
+    .filter-checkbox label { font-size: 0.9rem; color: var(--tvlk-gray); font-weight: 500; cursor: pointer; display: flex; justify-content: space-between; width: 100%; }
 
-    @media (max-width: 768px) {
-        .search-unified {
-            flex-direction: column;
-            border-radius: 24px;
-            padding: 15px;
-        }
-
-        .search-group {
-            border-right: none;
-            border-bottom: 1px solid var(--border-color);
-            padding: 15px 10px;
-            width: 100%;
-        }
-
-        .search-group:hover {
-            border-radius: 12px;
-        }
-
-        .btn-search-unified {
-            width: 100%;
-            justify-content: center;
-            margin-left: 0;
-            margin-top: 15px;
-            border-radius: 16px;
-        }
+    /* --- SORTING BAR --- */
+    .sorting-bar {
+        display: flex; justify-content: space-between; align-items: center;
+        background: white; padding: 15px 20px; border-radius: var(--radius-md);
+        border: 1px solid var(--tvlk-border); margin-bottom: 20px;
     }
+    .sorting-result { font-weight: 700; font-size: 1.1rem; }
+    .sort-select { border: 1px solid var(--tvlk-border); border-radius: 8px; padding: 8px 15px; font-weight: 600; font-size: 0.9rem; color: var(--tvlk-text); outline: none; cursor: pointer; }
 
-    /* --- TOUR CARD --- */
-    .tour-card {
-        border: 1px solid #f0f0f0;
-        border-radius: 20px;
-        overflow: hidden;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
-        transition: all 0.3s ease;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        background: white;
+    /* --- TVLK TOUR CARD --- */
+    .tvlk-card {
+        background: white; border-radius: var(--radius-md); box-shadow: 0 2px 8px rgba(3, 18, 26, 0.05);
+        border: 1px solid var(--tvlk-border); overflow: hidden; transition: 0.2s; height: 100%; display: flex; flex-direction: column; position: relative;
     }
-
-    .tour-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-        border-color: #cbd5e1;
+    .tvlk-card:hover { box-shadow: 0 8px 24px rgba(3, 18, 26, 0.1); transform: translateY(-4px); border-color: transparent;}
+    .card-img-box { position: relative; height: 180px; }
+    .card-img-box img { width: 100%; height: 100%; object-fit: cover; }
+    .rating-badge {
+        position: absolute; bottom: 10px; left: 10px; background: rgba(255,255,255,0.95); backdrop-filter: blur(4px);
+        padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; color: var(--tvlk-text); display: flex; align-items: center; gap: 4px;
     }
-
-    .tour-image-wrapper {
-        position: relative;
-        overflow: hidden;
-        height: 230px;
-    }
-
-    .tour-card img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.5s ease;
-    }
-
-    .tour-card:hover img {
-        transform: scale(1.08);
-    }
-
-    .location-badge {
-        position: absolute;
-        top: 15px;
-        left: 15px;
-        background: rgba(255, 255, 255, 0.95);
-        color: var(--primary-color);
-        padding: 6px 14px;
-        border-radius: 50px;
-        font-size: 0.85rem;
-        font-weight: 700;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        z-index: 2;
-    }
-
-    .card-body-custom {
-        padding: 24px;
-        display: flex;
-        flex-direction: column;
-        flex-grow: 1;
-    }
-
-    .tour-title {
-        font-size: 1.2rem;
-        font-weight: 800;
-        color: var(--text-main);
-        margin-bottom: 15px;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        line-height: 1.4;
-    }
-
-    .tour-info-list {
-        list-style: none;
-        padding: 0;
-        margin-bottom: 15px;
-    }
-
-    .tour-info-list li {
-        color: #475569;
-        font-size: 0.95rem;
-        margin-bottom: 8px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .tour-info-list li i {
-        color: var(--primary-color);
-        font-size: 1.1rem;
-    }
-
-    .tour-price {
-        font-size: 1.5rem;
-        font-weight: 800;
-        color: var(--accent-color);
-        margin-top: auto;
-        padding-top: 15px;
-        border-top: 1px dashed var(--border-color);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .tour-price span {
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: var(--text-muted);
-    }
-
-    .btn-actions {
-        display: flex;
-        gap: 10px;
-        margin-top: 15px;
-    }
-
-    .btn-view {
-        background-color: #f1f5f9;
-        color: var(--text-main);
-        border: none;
-        font-weight: 600;
-        border-radius: 12px;
-        padding: 10px;
-        flex: 1;
-        transition: 0.3s;
-        text-align: center;
-        text-decoration: none;
-    }
-
-    .btn-view:hover {
-        background-color: #e2e8f0;
-    }
-
-    .btn-book {
-        background-color: var(--primary-color);
-        color: white;
-        border: none;
-        font-weight: 600;
-        border-radius: 12px;
-        padding: 10px;
-        flex: 1;
-        transition: 0.3s;
-        text-align: center;
-        text-decoration: none;
-    }
-
-    .btn-book:hover {
-        background-color: #007bc2;
-    }
+    .tvlk-card-body { padding: 16px; display: flex; flex-direction: column; flex-grow: 1; }
+    .tour-location { font-size: 0.8rem; color: var(--tvlk-gray); font-weight: 700; margin-bottom: 8px; text-transform: uppercase; }
+    .tour-title { font-size: 1.05rem; font-weight: 800; color: var(--tvlk-text); line-height: 1.4; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .tour-info-list { list-style: none; padding: 0; margin-bottom: 15px; }
+    .tour-info-list li { color: var(--tvlk-gray); font-size: 0.85rem; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; font-weight: 500; }
+    .tour-info-list li i { color: var(--tvlk-blue); }
+    .price-box { margin-top: auto; text-align: right; padding-top: 15px; border-top: 1px dashed var(--tvlk-border); }
+    .price-current { font-size: 1.3rem; font-weight: 800; color: var(--tvlk-orange); }
+    .btn-actions { display: flex; gap: 10px; margin-top: 15px; }
+    .btn-view { background-color: var(--tvlk-bg); color: var(--tvlk-blue); border: 1px solid var(--tvlk-border); font-weight: 700; border-radius: var(--radius-sm); padding: 8px; flex: 1; transition: 0.2s; text-align: center; text-decoration: none; font-size: 0.9rem; }
+    .btn-view:hover { background-color: var(--tvlk-blue); color: white; border-color: var(--tvlk-blue); }
+    .btn-book { background-color: var(--tvlk-orange); color: white; border: none; font-weight: 700; border-radius: var(--radius-sm); padding: 8px; flex: 1; transition: 0.2s; text-align: center; font-size: 0.9rem; }
 </style>
 
-<div class="hero-tours">
-    <div class="hero-content-wrapper">
-        <h1 class="hero-title">Tìm kiếm hành trình của bạn</h1>
-        <p class="hero-subtitle">Hàng trăm tour du lịch đang chờ bạn khám phá</p>
+<div class="container">
+    <div class="tour-breadcrumb">
+        <a href="index.php">Trang chủ</a> <i class="bi bi-chevron-right"></i>
+        <span class="text-dark fw-bold">Khám phá Tours</span>
+    </div>
 
-        <form method="GET" action="index.php">
-            <input type="hidden" name="action" value="tours">
-            <div class="search-unified">
-
-                <div class="search-group">
-                    <i class="bi bi-geo-alt-fill"></i>
-                    <div class="search-input-wrapper">
-                        <label>Điểm đến</label>
-                        <input type="text" name="location" value="<?= htmlspecialchars((string) ($search_term ?? '')) ?>"
-                            placeholder="Bạn muốn đi đâu?">
+    <div class="hero-tours-mini">
+        <div class="container px-4">
+            <h2 class="fw-bold mb-4 text-center">Tìm kiếm hành trình tiếp theo của bạn</h2>
+            <form method="GET" action="index.php">
+                <input type="hidden" name="action" value="tours">
+                <div class="search-unified">
+                    <div class="search-group">
+                        <i class="bi bi-geo-alt-fill"></i>
+                        <div class="search-input-wrapper">
+                            <label>Điểm đến</label>
+                            <input type="text" name="location" value="<?= htmlspecialchars((string) ($search_term ?? '')) ?>" placeholder="Bạn muốn đi đâu?">
+                        </div>
                     </div>
+                    <div class="search-group">
+                        <i class="bi bi-calendar-event"></i>
+                        <div class="search-input-wrapper">
+                            <label>Ngày đi</label>
+                            <input type="date" name="departure_date" value="<?= htmlspecialchars((string) ($departure_date ?? '')) ?>">
+                        </div>
+                    </div>
+                    <div class="search-group" style="border-right: none;">
+                        <i class="bi bi-cash"></i>
+                        <div class="search-input-wrapper">
+                            <label>Ngân sách tối đa</label>
+                            <input type="number" name="max_price" value="<?= htmlspecialchars((string) ($max_price ?? '')) ?>" placeholder="Ví dụ: 5000000">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-search-unified">Tìm kiếm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-lg-3 d-none d-lg-block">
+            <div class="filter-sidebar">
+                <div class="filter-title">
+                    Lọc kết quả 
+                    <span onclick="window.location.reload();"><i class="bi bi-arrow-clockwise"></i> Đặt lại</span>
                 </div>
 
-                <div class="search-group">
-                    <i class="bi bi-calendar-week-fill"></i>
-                    <div class="search-input-wrapper">
-                        <label>Ngày đi</label>
-                        <input type="date" name="departure_date"
-                            value="<?= htmlspecialchars((string) ($departure_date ?? '')) ?>">
-                    </div>
+                <div class="filter-group">
+                    <div class="filter-group-title">Khoảng giá</div>
+                    <div class="filter-checkbox"><input type="checkbox" class="filter-price" id="p1" value="0-2000000"><label for="p1">Dưới 2.000.000đ</label></div>
+                    <div class="filter-checkbox"><input type="checkbox" class="filter-price" id="p2" value="2000000-5000000"><label for="p2">2.000.000đ - 5.000.000đ</label></div>
+                    <div class="filter-checkbox"><input type="checkbox" class="filter-price" id="p3" value="5000000-999999999"><label for="p3">Trên 5.000.000đ</label></div>
                 </div>
 
-                <div class="search-group" style="border-right: none;">
-                    <i class="bi bi-wallet-fill"></i>
-                    <div class="search-input-wrapper">
-                        <label>Ngân sách</label>
-                        <input type="number" name="max_price"
-                            value="<?= htmlspecialchars((string) ($max_price ?? '')) ?>" placeholder="Mức giá tối đa">
+                <div class="filter-group mb-0">
+                    <div class="filter-group-title">Thời lượng</div>
+                    <div class="filter-checkbox"><input type="checkbox" class="filter-duration" id="d1" value="1-3"><label for="d1">1 - 3 ngày</label></div>
+                    <div class="filter-checkbox"><input type="checkbox" class="filter-duration" id="d2" value="4-7"><label for="d2">4 - 7 ngày</label></div>
+                    <div class="filter-checkbox"><input type="checkbox" class="filter-duration" id="d3" value="8-99"><label for="d3">Trên 7 ngày</label></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            
+            <div class="sorting-bar">
+                <div class="sorting-result">
+                    Tìm thấy <span class="text-primary" id="tour-count"><?= count($tours) ?></span> Tours phù hợp
+                </div>
+                <div class="sorting-options">
+                    <span class="text-muted fw-bold" style="font-size: 0.9rem;">Sắp xếp theo:</span>
+                    <select class="sort-select" id="sort-select">
+                        <option value="default">Đề xuất của TravelVN</option>
+                        <option value="price_asc">Giá: Thấp đến Cao</option>
+                        <option value="price_desc">Giá: Cao đến Thấp</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row g-4" id="tour-list-container">
+                <?php if (!empty($tours)): ?>
+                    <?php foreach ($tours as $row): ?>
+                        
+                        <div class="col-md-6 col-lg-4 tour-card-wrapper" 
+                             data-price="<?= $row['price'] ?>" 
+                             data-duration="<?= $row['duration'] ?? 0 ?>">
+                             
+                            <div class="tvlk-card">
+                                <div class="card-img-box">
+                                    <?php 
+                                        $imgSrc = !empty($row['image']) ? (strpos($row['image'], 'http') === 0 ? $row['image'] : '../public/uploads/' . $row['image']) : 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=500&q=80';
+                                    ?>
+                                    <img src="<?= $imgSrc ?>" alt="<?= htmlspecialchars($row['tour_name']); ?>">
+                                    <div class="rating-badge"><i class="bi bi-star-fill text-warning"></i> 4.8 <span class="text-muted fw-normal">(120)</span></div>
+                                </div>
+
+                                <div class="tvlk-card-body">
+                                    <div class="tour-location"><i class="bi bi-geo-alt-fill me-1" style="color: var(--tvlk-blue);"></i><?= htmlspecialchars($row['destination']) ?></div>
+                                    
+                                    <h5 class="tour-title" title="<?= htmlspecialchars($row['tour_name']); ?>">
+                                        <?= htmlspecialchars($row['tour_name']); ?>
+                                    </h5>
+
+                                    <ul class="tour-info-list">
+                                        <li><i class="bi bi-clock-history"></i> <?= htmlspecialchars($row['duration'] ?? '--'); ?> ngày</li>
+                                        <li><i class="bi bi-building"></i> <span class="text-truncate"><?= htmlspecialchars($row['hotel'] ?? 'Đang cập nhật'); ?></span></li>
+                                    </ul>
+
+                                    <div class="price-box">
+                                        <div class="price-current">
+                                            <?= number_format($row['price']); ?> <span style="font-size: 0.85rem; font-weight: 600; color: var(--tvlk-gray);">VNĐ</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="btn-actions">
+                                        <a href="index.php?action=detail&id=<?= $row['tour_id']; ?>" class="btn-view">Chi tiết</a>
+                                        <button class="btn-book btn-book-now" data-id="<?= $row['tour_id']; ?>" data-name="<?= htmlspecialchars($row['tour_name']); ?>">Đặt ngay</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="col-12" id="no-result-msg">
+                        <div class="text-center py-5 bg-white border shadow-sm" style="border-radius: var(--radius-lg);">
+                            <img src="https://cdn-icons-png.flaticon.com/512/7486/7486744.png" alt="No Result" width="100" class="mb-3 opacity-50">
+                            <h5 class="fw-bold text-dark">Rất tiếc, không có kết quả!</h5>
+                            <p class="text-muted mb-4">Chúng tôi không tìm thấy tour nào khớp với bộ lọc của bạn.</p>
+                            <a href="index.php?action=tours" class="btn text-white rounded-pill px-4 py-2 fw-bold" style="background: var(--tvlk-blue);">Xem tất cả tour</a>
+                        </div>
+                    </div>
+                <?php endif; ?>
+                
+                <div class="col-12 d-none" id="js-no-result">
+                    <div class="text-center py-5 bg-white border shadow-sm" style="border-radius: var(--radius-lg);">
+                        <h5 class="fw-bold text-dark">Không có tour phù hợp với tùy chọn lọc!</h5>
+                        <p class="text-muted mb-0">Vui lòng bỏ bớt tiêu chí lọc bên trái để xem thêm kết quả.</p>
                     </div>
                 </div>
-
-                <button type="submit" class="btn-search-unified">
-                    <i class="bi bi-search"></i> Tìm kiếm
-                </button>
 
             </div>
-        </form>
-    </div>
-</div>
-
-<div class="container mb-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold text-dark m-0" style="font-size: 1.8rem;">
-            <?php
-            // Kiểm tra xem user CÓ dùng bộ lọc nào không
-            $isSearching = !empty($search_term) || !empty($max_price) || !empty($departure_date) || !empty($category);
-
-            if (empty($tours)) {
-                echo 'Không tìm thấy kết quả';
-            } elseif ($isSearching) {
-                echo 'Kết quả tìm kiếm (' . count($tours) . ' tour)';
-            } else {
-                echo 'Khám phá tất cả các Tour (' . count($tours) . ')';
-            }
-            ?>
-        </h3>
-
-        <?php if (isset($isSearching) && $isSearching): ?>
-            <a href="index.php?action=tours"
-                class="btn btn-light border btn-sm text-danger fw-bold rounded-pill px-3 py-2 shadow-sm">
-                <i class="bi bi-x-circle me-1"></i> Xóa bộ lọc
-            </a>
-        <?php endif; ?>
-    </div>
-
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-        <?php if (!empty($tours)): ?>
-            <?php foreach ($tours as $row): ?>
-                <div class="col">
-                    <div class="tour-card">
-                        <div class="tour-image-wrapper">
-                            <div class="location-badge"><i
-                                    class="bi bi-geo-alt-fill me-1"></i><?= htmlspecialchars($row['destination']) ?></div>
-                            <img src="<?= !empty($row['image']) ? '../public/uploads/' . $row['image'] : 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=500&q=80' ?>"
-                                alt="<?= htmlspecialchars($row['tour_name']); ?>">
-                        </div>
-
-                        <div class="card-body-custom">
-                            <h5 class="tour-title" title="<?= htmlspecialchars($row['tour_name']); ?>">
-                                <?= htmlspecialchars($row['tour_name']); ?>
-                            </h5>
-
-                            <ul class="tour-info-list">
-                                <li><i class="bi bi-clock-history"></i>
-                                    <strong><?= htmlspecialchars($row['duration'] ?? '--'); ?> ngày</strong>
-                                </li>
-                                <li><i class="bi bi-building"></i> Khách sạn:
-                                    <strong><?= htmlspecialchars($row['hotel'] ?? 'Đang cập nhật'); ?></strong>
-                                </li>
-                            </ul>
-
-                            <div class="tour-price">
-                                <?= number_format($row['price']); ?> <span
-                                    style="font-size: 0.9rem; font-weight: 500; color: #6c757d;">VNĐ</span>
-                            </div>
-
-                            <div class="btn-actions">
-                                <a href="index.php?action=detail&id=<?= $row['tour_id']; ?>" class="btn-view">Chi tiết</a>
-                                <button class="btn-book btn-book-now" data-id="<?= $row['tour_id']; ?>"
-                                    data-name="<?= htmlspecialchars($row['tour_name']); ?>">
-                                    Đặt ngay
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            <?php endforeach; ?>
-        <?php endif; ?>
-    </div>
-
-    <?php if (empty($tours)): ?>
-        <div class="text-center py-5 bg-white rounded-4 border mt-3 shadow-sm">
-            <img src="https://cdn-icons-png.flaticon.com/512/7486/7486744.png" alt="No Result" width="120"
-                class="mb-3 opacity-50">
-            <h4 class="mt-2 fw-bold text-dark">Rất tiếc, không có kết quả!</h4>
-            <p class="text-muted">Chúng tôi không tìm thấy tour nào khớp với bộ lọc của bạn.<br>Hãy thử thay đổi ngày đi,
-                mức giá hoặc điểm đến khác nhé.</p>
-            <a href="index.php?action=tours" class="btn btn-primary mt-3 rounded-pill px-4 py-2 fw-bold shadow-sm">Xem tất
-                cả tour</a>
         </div>
-    <?php endif; ?>
-
+    </div>
 </div>
+
+<script>
+    // BẮT SỰ KIỆN KHI NGƯỜI DÙNG BẤM VÀO CHECKBOX LỌC GIÁ HOẶC NGÀY
+    document.querySelectorAll('.filter-price, .filter-duration').forEach(checkbox => {
+        checkbox.addEventListener('change', runFilters);
+    });
+
+    // HÀM LỌC DANH SÁCH TOUR
+    function runFilters() {
+        // Lấy tất cả các checkbox đang được đánh dấu
+        let selectedPrices = Array.from(document.querySelectorAll('.filter-price:checked')).map(cb => cb.value);
+        let selectedDurations = Array.from(document.querySelectorAll('.filter-duration:checked')).map(cb => cb.value);
+        
+        let tours = document.querySelectorAll('.tour-card-wrapper');
+        let visibleCount = 0;
+
+        tours.forEach(tour => {
+            // Đọc dữ liệu từ data-price và data-duration của từng thẻ html
+            let tourPrice = parseInt(tour.getAttribute('data-price'));
+            let tourDuration = parseInt(tour.getAttribute('data-duration'));
+            
+            let priceMatch = false;
+            let durationMatch = false;
+
+            // KIỂM TRA MỨC GIÁ
+            if (selectedPrices.length === 0) {
+                priceMatch = true; // Nếu không chọn ô giá nào thì cho qua
+            } else {
+                for (let p of selectedPrices) {
+                    let [min, max] = p.split('-');
+                    if (tourPrice >= parseInt(min) && tourPrice <= parseInt(max)) {
+                        priceMatch = true; break;
+                    }
+                }
+            }
+
+            // KIỂM TRA SỐ NGÀY
+            if (selectedDurations.length === 0) {
+                durationMatch = true; // Nếu không chọn ô ngày nào thì cho qua
+            } else {
+                for (let d of selectedDurations) {
+                    let [min, max] = d.split('-');
+                    if (tourDuration >= parseInt(min) && tourDuration <= parseInt(max)) {
+                        durationMatch = true; break;
+                    }
+                }
+            }
+
+            // XỬ LÝ HIỂN THỊ
+            if (priceMatch && durationMatch) {
+                tour.classList.remove('d-none');
+                visibleCount++;
+            } else {
+                tour.classList.add('d-none');
+            }
+        });
+
+        // Cập nhật con số hiển thị
+        document.getElementById('tour-count').innerText = visibleCount;
+        
+        // Hiển thị thông báo nếu không có Tour nào
+        const noResultMsg = document.getElementById('js-no-result');
+        if(visibleCount === 0 && tours.length > 0) {
+            noResultMsg.classList.remove('d-none');
+        } else {
+            noResultMsg.classList.add('d-none');
+        }
+    }
+
+    // BẮT SỰ KIỆN KHI CHỌN SẮP XẾP GIÁ
+    document.getElementById('sort-select').addEventListener('change', function() {
+        let val = this.value;
+        let container = document.getElementById('tour-list-container');
+        // Lấy danh sách các thẻ hiện tại
+        let cards = Array.from(document.querySelectorAll('.tour-card-wrapper'));
+        
+        if (val === 'price_asc') {
+            cards.sort((a, b) => parseInt(a.dataset.price) - parseInt(b.dataset.price));
+        } else if (val === 'price_desc') {
+            cards.sort((a, b) => parseInt(b.dataset.price) - parseInt(a.dataset.price));
+        }
+        
+        // Đảo lại thứ tự trong HTML
+        cards.forEach(card => container.appendChild(card));
+    });
+</script>
 
 <div class="modal fade" id="bookingModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow" style="border-radius: 20px;">
             <div class="modal-header bg-light border-0" style="border-radius: 20px 20px 0 0;">
-                <h5 class="modal-title fw-bold text-primary"><i class="bi bi-calendar-check me-2"></i>Chọn lịch trình
+                <h5 class="modal-title fw-bold" style="color: var(--tvlk-blue);"><i class="bi bi-calendar-check me-2"></i>Chọn lịch trình
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -454,21 +353,20 @@
                     <input type="hidden" name="action" value="booking">
                     <input type="hidden" name="tour_id" id="tourId">
 
-                    <label class="fw-bold mb-2 text-muted"><i class="bi bi-calendar-event me-1"></i> Ngày khởi
-                        hành:</label>
+                    <label class="fw-bold mb-2" style="color: var(--tvlk-gray);"><i class="bi bi-calendar-event me-1"></i> Ngày khởi hành:</label>
                     <select name="departure_id" id="departureSelect" class="form-select form-select-lg mb-4"
-                        style="border-radius: 12px;" required>
+                        style="border-radius: 12px; font-size: 1rem;" required>
                         <option value="">Đang tải dữ liệu...</option>
                     </select>
 
                     <?php if (isset($_SESSION['user'])): ?>
-                        <button type="submit" class="btn btn-primary w-100 py-3 fw-bold shadow-sm"
-                            style="border-radius: 12px; font-size: 1.1rem;">
+                        <button type="submit" class="btn w-100 py-3 fw-bold shadow-sm text-white"
+                            style="border-radius: 12px; font-size: 1.1rem; background: var(--tvlk-orange);">
                             Xác nhận đặt tour
                         </button>
                     <?php else: ?>
-                        <a href="index.php?action=login" class="btn btn-warning w-100 py-3 fw-bold shadow-sm text-dark"
-                            style="border-radius: 12px; font-size: 1.1rem;">
+                        <a href="index.php?action=login" class="btn w-100 py-3 fw-bold shadow-sm text-white"
+                            style="border-radius: 12px; font-size: 1.1rem; background: var(--tvlk-blue);">
                             <i class="bi bi-box-arrow-in-right me-2"></i> Đăng nhập để đặt tour
                         </a>
                         <p class="text-center small text-muted mt-2">Vui lòng đăng nhập để tiến hành đặt chỗ.</p>
@@ -480,6 +378,7 @@
 </div>
 
 <script>
+    // Logic của Modal giữ nguyên
     document.querySelectorAll('.btn-book-now').forEach(btn => {
         btn.addEventListener('click', function () {
             const tourId = this.dataset.id;

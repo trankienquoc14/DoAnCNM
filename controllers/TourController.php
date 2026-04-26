@@ -16,7 +16,26 @@ class TourController
 
     public function home()
     {
+        // 1. Lấy danh sách tour hiển thị giá tốt
         $stmt = $this->db->query("SELECT * FROM tours LIMIT 8");
+        
+        // 2. Lấy 4 bài viết Cẩm nang
+        $stmtBlogs = $this->db->query("SELECT * FROM blogs ORDER BY created_at DESC LIMIT 4");
+        $blogs = $stmtBlogs->fetchAll(PDO::FETCH_ASSOC);
+
+        // 3. ĐẾM SỐ LƯỢNG TOUR THỰC TẾ CỦA 4 ĐỊA ĐIỂM
+        $stmtCounts = $this->db->query("
+            SELECT 
+                SUM(CASE WHEN destination LIKE '%Đà Nẵng%' THEN 1 ELSE 0 END) as danang,
+                SUM(CASE WHEN destination LIKE '%Phú Quốc%' THEN 1 ELSE 0 END) as phuquoc,
+                SUM(CASE WHEN destination LIKE '%Sapa%' THEN 1 ELSE 0 END) as sapa,
+                SUM(CASE WHEN destination LIKE '%Đà Lạt%' THEN 1 ELSE 0 END) as dalat
+            FROM tours 
+            WHERE status = 'active'
+        ");
+        $destCounts = $stmtCounts->fetch(PDO::FETCH_ASSOC);
+
+        // Gọi view hiển thị
         require __DIR__ . '/../views/home.php';
     }
 
@@ -396,6 +415,42 @@ class TourController
             $stmtCancelP = $this->db->prepare("UPDATE payments SET payment_status = 'failed' WHERE booking_id = ?");
             $stmtCancelP->execute([$b['booking_id']]);
         }
+    }
+    // --- HÀM XEM CHI TIẾT BÀI VIẾT CẨM NANG ---
+    public function blogDetail()
+    {
+        // 1. Lấy ID bài viết từ URL
+        $id = isset($_GET['id']) && is_numeric($_GET['id']) ? intval($_GET['id']) : 0;
+
+        // 2. Truy vấn nội dung bài viết hiện tại
+        $stmt = $this->db->prepare("SELECT * FROM blogs WHERE blog_id = ?");
+        $stmt->execute([$id]);
+        $blog = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$blog) {
+            die("<div style='text-align:center; padding: 100px; font-family: sans-serif;'>
+                    <h2>Không tìm thấy bài viết!</h2>
+                    <a href='index.php'>Quay lại trang chủ</a>
+                 </div>");
+        }
+
+        // 3. Lấy 3 bài viết mới nhất làm "Bài viết liên quan" (Loại trừ bài hiện tại)
+        $stmtRelated = $this->db->prepare("SELECT * FROM blogs WHERE blog_id != ? ORDER BY created_at DESC LIMIT 3");
+        $stmtRelated->execute([$id]);
+        $relatedBlogs = $stmtRelated->fetchAll(PDO::FETCH_ASSOC);
+
+        // 4. Gọi file View để hiển thị
+        require __DIR__ . '/../views/blog_detail.php';
+    }
+    // --- HÀM XEM DANH SÁCH TẤT CẢ CẨM NANG DU LỊCH ---
+    public function blogs()
+    {
+        // 1. Lấy tất cả bài viết từ CSDL
+        $stmt = $this->db->query("SELECT * FROM blogs ORDER BY created_at DESC");
+        $blogsList = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // 2. Gọi View hiển thị (file views/blogs.php mà bạn đã tạo lúc nãy)
+        require __DIR__ . '/../views/blogs.php';
     }
 
 }

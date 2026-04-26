@@ -422,7 +422,7 @@
                     }
 
                     $payMethod = strtoupper($b['payment_method'] ?? '');
-                    $payMethodText = ($payMethod == 'QR') ? 'Chuyển khoản QR' : (($payMethod == 'CASH') ? 'Tiền mặt' : 'Chưa chọn');
+                    $payMethodText = ($payMethod == 'QR') ? 'Chuyển khoản QR' : (($payMethod == 'COD') ? 'Thu tiền mặt' : 'Chưa chọn');
 
                     $payStatus = $b['payment_status'] ?? 'pending';
                     if ($payStatus == 'paid') {

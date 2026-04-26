@@ -111,6 +111,10 @@
                 class="admin-menu-item <?= ($activeMenu === 'partners') ? 'active' : '' ?>">
                 <i class="bi bi-buildings"></i> Đối tác dịch vụ
             </a>
+            <a href="../public/manager.php?action=blogs"
+                class="admin-menu-item <?= ($activeMenu === 'blogs') ? 'active' : '' ?>">
+                <i class="bi bi-journal-text"></i> Quản lý Bài viết
+            </a>
             <a href="../public/manager.php?action=report"
                 class="admin-menu-item <?= ($activeMenu === 'report') ? 'active' : '' ?>">
                 <i class="bi bi-graph-up-arrow"></i> Báo cáo doanh thu

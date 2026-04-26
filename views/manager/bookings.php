@@ -9,11 +9,11 @@
         --admin-warning: #f59e0b;
         --admin-danger: #ef4444;
         --admin-info: #0ea5e9;
-        --admin-bg: #f1f5f9; 
+        --admin-bg: #f1f5f9;
         --admin-surface: #ffffff;
         --admin-border: #e2e8f0;
-        --admin-text-main: #0f172a; 
-        --admin-text-muted: #475569; 
+        --admin-text-main: #0f172a;
+        --admin-text-muted: #475569;
     }
 
     body {
@@ -22,7 +22,7 @@
     }
 
     .admin-container {
-        max-width: 1350px; /* Tăng nhẹ độ rộng để bảng thoải mái hơn */
+        max-width: 1350px;
         margin: 40px auto;
         padding: 0 15px;
     }
@@ -31,7 +31,7 @@
         display: flex;
         justify-content: space-between;
         align-items: flex-end;
-        margin-bottom: 30px;
+        margin-bottom: 25px; /* Giảm nhẹ margin để nhường chỗ cho Alert */
     }
 
     .admin-title {
@@ -48,7 +48,7 @@
         border: 1px solid var(--admin-border);
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
     }
-    
+
     .table th {
         background-color: #f8fafc;
         color: var(--admin-text-muted);
@@ -59,7 +59,7 @@
         padding: 15px;
         border-bottom: 2px solid var(--admin-border);
     }
-    
+
     .table td {
         padding: 15px;
         vertical-align: middle;
@@ -67,7 +67,6 @@
         border-bottom: 1px solid var(--admin-border);
     }
 
-    /* Style riêng cho các nút hành động dạng dọc */
     .btn-manage {
         width: 55px;
         height: 52px;
@@ -84,19 +83,13 @@
         text-decoration: none !important;
     }
 
-    .btn-manage i {
-        font-size: 1.2rem;
-    }
-
+    .btn-manage i { font-size: 1.2rem; }
     .btn-manage-info { background-color: #f0f9ff; color: #0369a1; border-color: #bae6fd; }
     .btn-manage-info:hover { background-color: #0369a1; color: white; }
-
     .btn-manage-success { background-color: #ecfdf5; color: #059669; border-color: #a7f3d0; }
     .btn-manage-success:hover { background-color: #059669; color: white; }
-
     .btn-manage-warning { background-color: #fffbeb; color: #d97706; border-color: #fef3c7; }
     .btn-manage-warning:hover { background-color: #d97706; color: white; }
-
     .btn-manage-danger { background-color: #fef2f2; color: #dc2626; border-color: #fecdd3; }
     .btn-manage-danger:hover { background-color: #dc2626; color: white; }
 
@@ -110,10 +103,10 @@
 
 <div class="admin-container">
     <div class="row g-4">
-        
-        <?php 
-            $activeMenu = 'bookings'; 
-            include __DIR__ . '/../layouts/sidebar_manager.php'; 
+
+        <?php
+        $activeMenu = 'bookings';
+        include __DIR__ . '/../layouts/sidebar_manager.php';
         ?>
 
         <div class="col-lg-9">
@@ -124,16 +117,34 @@
                 </div>
             </div>
 
+            <?php if (isset($_SESSION['success'])): ?>
+                <div class="alert alert-success alert-dismissible fade show shadow-sm border-0" role="alert" style="background-color: #ecfdf5; color: #065f46;">
+                    <i class="bi bi-check-circle-fill me-2 fs-5 align-middle"></i>
+                    <strong>Thành công!</strong> <?= $_SESSION['success']; ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <?php unset($_SESSION['success']); ?>
+            <?php endif; ?>
+
+            <?php if (isset($_SESSION['error'])): ?>
+                <div class="alert alert-danger alert-dismissible fade show shadow-sm border-0" role="alert" style="background-color: #fef2f2; color: #991b1b;">
+                    <i class="bi bi-exclamation-triangle-fill me-2 fs-5 align-middle"></i>
+                    <strong>Lỗi!</strong> <?= $_SESSION['error']; ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <?php unset($_SESSION['error']); ?>
+            <?php endif; ?>
             <div class="admin-card">
                 <div class="table-responsive">
                     <table class="table table-hover mb-0 align-middle">
                         <thead>
                             <tr>
                                 <th width="18%">Khách hàng</th>
-                                <th width="32%">Tour & Khởi hành</th>
+                                <th width="25%">Tour & Khởi hành</th>
                                 <th width="15%" class="text-end">Tổng tiền</th>
-                                <th width="15%" class="text-center">Trạng thái</th>
-                                <th width="20%" class="text-center">Hành động</th>
+                                <th width="17%" class="text-center">Thanh toán</th>
+                                <th width="10%" class="text-center">Trạng thái</th>
+                                <th width="15%" class="text-center">Hành động</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -146,19 +157,32 @@
                                                 <i class="bi bi-people-fill me-1"></i> <?= $b['number_of_people'] ?> khách
                                             </div>
                                         </td>
-                                        
+
                                         <td>
                                             <div class="fw-bold text-primary mb-1" style="font-size: 0.95rem;">
                                                 <?= htmlspecialchars($b['tour_name']) ?>
                                             </div>
                                             <div class="small text-muted fw-medium">
-                                                <i class="bi bi-calendar3 me-1"></i> <?= date('d/m/Y', strtotime($b['start_date'])) ?>
+                                                <i class="bi bi-calendar3 me-1"></i>
+                                                <?= date('d/m/Y', strtotime($b['start_date'])) ?>
                                             </div>
                                         </td>
-                                        
+
                                         <td class="text-end">
                                             <div class="fw-bold text-danger" style="font-size: 1.05rem;">
                                                 <?= number_format($b['total_price']) ?> đ
+                                            </div>
+                                        </td>
+
+                                        <td class="text-center">
+                                            <?php if (isset($b['payment_method']) && $b['payment_method'] == 'cod'): ?>
+                                                <span class="badge bg-secondary mb-1"><i class="bi bi-cash"></i> Tiền mặt</span>
+                                            <?php else: ?>
+                                                <span class="badge bg-info mb-1"><i class="bi bi-qr-code"></i> Chuyển khoản</span>
+                                            <?php endif; ?>
+
+                                            <div class="small mt-1 fw-bold <?= ($b['payment_status'] ?? '') == 'paid' ? 'text-success' : 'text-danger' ?>">
+                                                <?= ($b['payment_status'] ?? '') == 'paid' ? 'Đã thu tiền' : 'Chưa thu tiền' ?>
                                             </div>
                                         </td>
 
@@ -176,35 +200,42 @@
 
                                         <td>
                                             <div class="d-flex justify-content-center align-items-center gap-1">
-                                                
-                                                <a href="manager.php?action=bookingDetail&id=<?= $b['booking_id'] ?>" 
-                                                   class="btn-manage btn-manage-info" title="Xem chi tiết">
+
+                                                <a href="manager.php?action=bookingDetail&id=<?= $b['booking_id'] ?>"
+                                                    class="btn-manage btn-manage-info" title="Xem chi tiết">
                                                     <i class="bi bi-eye-fill"></i>
                                                     <span>Xem</span>
                                                 </a>
-                                                
-                                                <?php if ($b['status'] == 'pending'): ?>
-                                                    <a href="manager.php?action=confirmBooking&id=<?= $b['booking_id'] ?>" 
-                                                       class="btn-manage btn-manage-success" title="Duyệt đơn" 
-                                                       onclick="return confirm('Bạn chắc chắn muốn duyệt đơn này?')">
+
+                                                <?php if ($b['status'] == 'pending' && (isset($b['payment_method']) && $b['payment_method'] == 'cod')): ?>
+                                                    <a href="manager.php?action=confirmCash&id=<?= $b['booking_id'] ?>"
+                                                        class="btn-manage btn-manage-success" title="Xác nhận đã nhận tiền mặt"
+                                                        onclick="return confirm('Bạn chắc chắn ĐÃ NHẬN TIỀN MẶT và muốn duyệt đơn này?')">
+                                                        <i class="bi bi-cash-coin"></i>
+                                                        <span>Thu tiền</span>
+                                                    </a>
+                                                <?php elseif ($b['status'] == 'pending'): ?>
+                                                    <a href="manager.php?action=confirmBooking&id=<?= $b['booking_id'] ?>"
+                                                        class="btn-manage btn-manage-success" title="Duyệt đơn"
+                                                        onclick="return confirm('Bạn chắc chắn muốn duyệt đơn này?')">
                                                         <i class="bi bi-check-lg"></i>
                                                         <span>Duyệt</span>
                                                     </a>
                                                 <?php endif; ?>
 
                                                 <?php if ($b['status'] == 'confirmed'): ?>
-                                                    <a href="manager.php?action=refundBooking&id=<?= $b['booking_id'] ?>" 
-                                                       class="btn-manage btn-manage-warning" title="Hoàn tiền" 
-                                                       onclick="return confirm('Xác nhận hoàn tiền cho đơn này?')">
+                                                    <a href="manager.php?action=refundBooking&id=<?= $b['booking_id'] ?>"
+                                                        class="btn-manage btn-manage-warning" title="Hoàn tiền"
+                                                        onclick="return confirm('Xác nhận hoàn tiền cho đơn này?')">
                                                         <i class="bi bi-arrow-counterclockwise"></i>
                                                         <span>Hoàn tiền</span>
                                                     </a>
                                                 <?php endif; ?>
 
                                                 <?php if ($b['status'] != 'cancelled' && $b['status'] != 'refunded'): ?>
-                                                    <a href="manager.php?action=cancelBooking&id=<?= $b['booking_id'] ?>" 
-                                                       class="btn-manage btn-manage-danger" title="Hủy đơn" 
-                                                       onclick="return confirm('Bạn có chắc muốn hủy đơn đặt này?')">
+                                                    <a href="manager.php?action=cancelBooking&id=<?= $b['booking_id'] ?>"
+                                                        class="btn-manage btn-manage-danger" title="Hủy đơn"
+                                                        onclick="return confirm('Bạn có chắc muốn hủy đơn đặt này?')">
                                                         <i class="bi bi-x-circle"></i>
                                                         <span>Hủy</span>
                                                     </a>
@@ -216,7 +247,7 @@
                                 <?php endforeach; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="5" class="text-center py-5 text-muted">
+                                    <td colspan="6" class="text-center py-5 text-muted">
                                         <i class="bi bi-inbox fs-1 d-block mb-2 text-secondary opacity-25"></i>
                                         <p class="fw-medium mb-0">Hiện chưa có dữ liệu đơn đặt tour nào.</p>
                                     </td>

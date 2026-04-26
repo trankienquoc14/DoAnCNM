@@ -23,14 +23,12 @@ class GuideController
     // ================= LỊCH CÔNG TÁC =================
     public function schedule()
     {
-        // Khắc phục triệt để lỗi thiếu key 'user_id' hay 'id'
         $guide_id = $_SESSION['user']['user_id'] ?? $_SESSION['user']['id'] ?? 0;
 
         if ($guide_id == 0) {
             die("Lỗi: Không tìm thấy ID Hướng dẫn viên trong Session.");
         }
 
-        // ĐÃ SỬA LỖI DATABASE Ở ĐÂY: Sử dụng bảng trung gian `departure_guides` (dg)
         $stmt = $this->db->prepare("
             SELECT d.*, t.tour_name
             FROM departures d
@@ -59,13 +57,17 @@ class GuideController
         $stmt->execute([$id]);
         $departure = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        // Lấy danh sách khách hàng
-        // SQL FIXED: Lấy những người có trạng thái hợp lệ để đi tour
+        // ĐÃ SỬA LỖI TÀNG HÌNH: Lấy những khách 'confirmed', 'checked_in', 'completed'
         $stmt = $this->db->prepare("
             SELECT * FROM bookings
             WHERE departure_id = ? 
-            AND (status = 'confirmed') 
-            ORDER BY status DESC
+            AND status IN ('confirmed', 'checked_in', 'completed')
+            ORDER BY 
+                CASE status 
+                    WHEN 'checked_in' THEN 1 
+                    WHEN 'confirmed' THEN 2 
+                    ELSE 3 
+                END ASC
         ");
         $stmt->execute([$id]);
         $bookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -79,8 +81,7 @@ class GuideController
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $booking_id = $_POST['booking_id'];
 
-            // Vì trong SQL của bạn chưa có giá trị 'checked_in', 
-            // mình tạm chuyển sang 'completed' để dữ liệu được lưu thật.
+            // Cập nhật trạng thái thành checked_in để khớp với giao diện
             $stmt = $this->db->prepare("
                 UPDATE bookings 
                 SET status = 'checked_in'
@@ -93,6 +94,7 @@ class GuideController
             }
         }
     }
+    
     // ================= UPDATE TRẠNG THÁI TOUR =================
     public function updateStatus()
     {
@@ -108,10 +110,10 @@ class GuideController
             if ($status === 'completed') {
                 // Tự động chuyển trạng thái những khách đã đi (checked_in) sang 'completed' để khách được đánh giá
                 $stmtBooking = $this->db->prepare("
-                UPDATE bookings 
-                SET status = 'completed' 
-                WHERE departure_id = ? AND status = 'checked_in'
-            ");
+                    UPDATE bookings 
+                    SET status = 'completed' 
+                    WHERE departure_id = ? AND status = 'checked_in'
+                ");
                 $stmtBooking->execute([$departure_id]);
 
                 // TẠO TÍN HIỆU ĐỂ HIỆN THÔNG BÁO Ở VIEW

@@ -1,244 +1,280 @@
 <?php include __DIR__ . "/../views/layouts/header.php"; ?>
 
 <style>
-    /* Nhúng trực tiếp font chữ nghệ thuật từ Google Fonts */
-    @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&display=swap');
 
     :root {
-        --primary-color: #0194f3;
-        --accent-color: #ff5e1f;
-        --text-main: #2c3e50;
-        --text-muted: #64748b;
-        --bg-light: #f8fafc;
-        --bg-soft-blue: #f0f7ff;
+        --tvlk-blue: #0194f3;
+        --tvlk-dark-blue: #0770cd;
+        --tvlk-orange: #ff5e1f;
+        --tvlk-bg: #f7f9fa;
+        --tvlk-text: #03121a;
+        --tvlk-gray: #687176;
+        --tvlk-border: #e1e8ee;
+        --radius-md: 8px;
+        --radius-lg: 16px;
     }
 
     body {
-        background-color: #fff;
-        font-family: 'Inter', 'Segoe UI', sans-serif;
+        background-color: var(--tvlk-bg);
+        font-family: 'Inter', sans-serif;
+        color: var(--tvlk-text);
     }
 
-    /* --- HERO SECTION --- */
-    .hero-section {
-        height: 550px;
-        background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e') center/cover no-repeat;
+    /* --- HERO & FLOATING SEARCH --- */
+    .hero-banner {
+        height: 360px;
+        background: linear-gradient(rgba(3, 18, 26, 0.4), rgba(3, 18, 26, 0.7)), url('uploads/banner_head.jpg') center/cover;
+        position: relative;
         display: flex;
         align-items: center;
         justify-content: center;
-        text-align: center;
-        color: white;
-        border-bottom-left-radius: 40px;
-        border-bottom-right-radius: 40px;
-        margin-bottom: -50px;
-        padding-bottom: 60px;
     }
 
-    /* SLOGAN CHỮ NGHỆ THUẬT */
     .slogan-text {
         font-family: 'Dancing Script', cursive;
-        font-size: 3.2rem;
+        font-size: 3rem;
         color: #ffda79;
-        /* Màu vàng nắng cực kỳ nổi bật */
-        font-weight: 700;
-        letter-spacing: 2px;
         text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.6);
-        margin-bottom: 5px;
         display: block;
+        margin-bottom: 5px;
+        transform: rotate(-2deg);
+    }
+
+    .hero-title-box {
+        margin-top: -60px;
+        text-align: center;
     }
 
     .hero-title {
-        font-size: 3.2rem;
+        color: white;
+        font-size: 2.2rem;
         font-weight: 800;
-        letter-spacing: -1px;
-        text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        margin-bottom: 15px;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
     }
 
-    .hero-subtitle {
-        font-size: 1.2rem;
-        font-weight: 400;
-        opacity: 0.95;
-        margin-bottom: 2rem;
-    }
-
-    /* --- SEARCH BOX --- */
-    .hero-search {
+    .search-widget-container {
+        max-width: 1040px;
+        margin: -80px auto 40px;
         position: relative;
         z-index: 10;
-        margin-bottom: 60px;
+        padding: 0 15px;
     }
 
-    .search-card {
+    .search-widget {
         background: white;
-        border-radius: 20px;
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-        padding: 10px;
-        border: 1px solid rgba(255, 255, 255, 0.8);
+        border-radius: var(--radius-lg);
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+        padding: 24px;
+        border: 1px solid var(--tvlk-border);
     }
 
-    .search-box-inner {
-        background: var(--bg-light);
-        border-radius: 16px;
-        padding: 20px;
+    .widget-tabs {
+        display: flex;
+        gap: 20px;
+        border-bottom: 2px solid var(--tvlk-bg);
+        margin-bottom: 20px;
+        padding-bottom: 10px;
     }
 
-    .form-control-custom {
-        border-radius: 12px;
-        padding: 14px 15px;
-        border: 1px solid #e2e8f0;
-        font-weight: 500;
-    }
-
-    .form-control-custom:focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 4px rgba(1, 148, 243, 0.1);
-    }
-
-    .btn-search {
-        background-color: var(--accent-color);
-        color: white;
-        border-radius: 12px;
+    .widget-tab {
         font-weight: 700;
-        padding: 14px;
-        border: none;
-        transition: 0.3s;
-        font-size: 1.1rem;
-    }
-
-    .btn-search:hover {
-        background-color: #e04d14;
-        transform: translateY(-2px);
-    }
-
-    /* --- CATEGORY ICONS --- */
-    .category-section {
-        padding-top: 20px;
-        padding-bottom: 60px;
-        text-align: center;
-    }
-
-    .section-title-sm {
-        font-weight: 800;
-        color: var(--text-main);
-        margin-bottom: 30px;
-        font-size: 1.8rem;
-    }
-
-    .cat-item {
-        text-align: center;
-        transition: 0.3s;
+        color: var(--tvlk-gray);
         cursor: pointer;
-        text-decoration: none;
-        color: var(--text-main);
+        padding-bottom: 10px;
+        margin-bottom: -12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: 0.2s;
+    }
+
+    .widget-tab:hover {
+        color: var(--tvlk-text);
+    }
+
+    .widget-tab.active {
+        color: var(--tvlk-blue);
+        border-bottom: 3px solid var(--tvlk-blue);
+    }
+
+    .search-input-group {
+        background: white;
+        border: 1px solid var(--tvlk-border);
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        padding: 10px 16px;
+        transition: 0.2s;
+    }
+
+    .search-input-group:focus-within {
+        border-color: var(--tvlk-blue);
+        box-shadow: 0 0 0 1px var(--tvlk-blue);
+    }
+
+    .search-input-group i {
+        color: var(--tvlk-gray);
+        font-size: 1.2rem;
+        margin-right: 12px;
+    }
+
+    .search-input-group label {
         display: block;
+        font-size: 0.75rem;
+        color: var(--tvlk-gray);
+        font-weight: 600;
+        margin-bottom: 2px;
     }
 
-    .cat-item:hover {
-        transform: translateY(-5px);
-        color: var(--primary-color);
+    .search-input-group input {
+        border: none;
+        padding: 0;
+        outline: none;
+        width: 100%;
+        font-weight: 600;
+        color: var(--tvlk-text);
     }
 
-    .cat-icon-box {
-        width: 75px;
-        height: 75px;
-        margin: 0 auto 15px;
-        border-radius: 50%;
-        background-color: var(--bg-soft-blue);
+    .btn-tvlk {
+        background: var(--tvlk-orange);
+        color: white;
+        border: none;
+        border-radius: var(--radius-md);
+        font-weight: 700;
+        font-size: 1.1rem;
+        width: 100%;
+        height: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 32px;
-        color: var(--primary-color);
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
-        transition: 0.3s;
+        gap: 8px;
+        transition: 0.2s;
     }
 
-    .cat-item:hover .cat-icon-box {
-        background-color: var(--primary-color);
+    .btn-tvlk:hover {
+        background: #e55015;
         color: white;
-        box-shadow: 0 8px 20px rgba(1, 148, 243, 0.3);
     }
 
-    .cat-title {
-        font-weight: 600;
-        font-size: 0.95rem;
-    }
-
-    /* --- TOP DESTINATIONS --- */
-    .dest-section {
-        background-color: var(--bg-soft-blue);
-        padding: 80px 0;
-        margin-bottom: 60px;
-    }
-
-    .section-header {
+    /* --- SERVICE ICONS MENU --- */
+    .service-menu {
         margin-bottom: 40px;
+    }
+
+    .service-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         text-align: center;
-    }
-
-    .section-title {
-        font-weight: 800;
-        color: var(--text-main);
-        margin-bottom: 10px;
-        font-size: 2.2rem;
-    }
-
-    .dest-card {
-        border-radius: 20px;
-        overflow: hidden;
-        position: relative;
-        height: 250px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-        transition: 0.4s;
+        text-decoration: none;
+        color: var(--tvlk-text);
         cursor: pointer;
     }
 
-    .dest-card.large {
-        height: 524px;
+    .service-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 26px;
+        color: white;
+        margin-bottom: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        transition: 0.3s;
     }
 
-    .dest-card:hover {
-        transform: scale(1.02);
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
-        z-index: 2;
+    .service-item:hover .service-icon {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .service-text {
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .bg-sea {
+        background: linear-gradient(135deg, #0194f3, #00d2ff);
+    }
+
+    .bg-mountain {
+        background: linear-gradient(135deg, #1bbc9b, #34d399);
+    }
+
+    .bg-culture {
+        background: linear-gradient(135deg, #f9ba05, #fbbf24);
+    }
+
+    .bg-resort {
+        background: linear-gradient(135deg, #ff5e1f, #fca5a5);
+    }
+
+    .bg-eco {
+        background: linear-gradient(135deg, #84cc16, #bef264);
+    }
+
+    /* --- COMMON TITLE --- */
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--tvlk-text);
+        margin-bottom: 20px;
+    }
+
+    /* --- ĐỊA ĐIỂM ĐƯỢC YÊU THÍCH --- */
+    .dest-card {
+        display: block;
+        position: relative;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        height: 200px;
+        text-decoration: none;
+    }
+
+    .dest-card::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 60%);
+        pointer-events: none;
     }
 
     .dest-card img {
         width: 100%;
         height: 100%;
         object-fit: cover;
-        transition: 0.5s;
+        transition: 0.5s ease;
     }
 
     .dest-card:hover img {
         transform: scale(1.1);
     }
 
-    .dest-overlay {
+    .dest-info {
         position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        padding: 30px 20px 20px;
-        background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
-        color: white;
-        pointer-events: none;
+        bottom: 15px;
+        left: 15px;
+        z-index: 2;
     }
 
-    .dest-name {
-        font-size: 1.6rem;
+    .dest-title {
+        color: white;
         font-weight: 800;
-        margin-bottom: 5px;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        font-size: 1.25rem;
+        margin-bottom: 2px;
     }
 
     .dest-count {
-        font-size: 0.95rem;
+        color: #e1e8ee;
+        font-size: 0.8rem;
         font-weight: 500;
-        opacity: 0.9;
     }
 
-    /* --- TOUR SLIDER --- */
+    /* --- TOUR SLIDER HIỂN THỊ ĐÚNG 4 THẺ --- */
     .slider-wrapper {
         position: relative;
     }
@@ -247,10 +283,9 @@
         display: flex;
         gap: 24px;
         overflow-x: auto;
-        scroll-behavior: smooth;
-        padding: 10px 5px 30px 5px;
+        padding-bottom: 30px;
         scroll-snap-type: x mandatory;
-        margin-bottom: 40px;
+        scroll-behavior: smooth;
     }
 
     .tour-scroll::-webkit-scrollbar {
@@ -258,111 +293,32 @@
     }
 
     .tour-item {
-        min-width: 320px;
-        max-width: 320px;
+        flex: 0 0 calc((100% - 72px) / 4);
         scroll-snap-align: start;
     }
 
-    .tour-card {
-        border-radius: 20px;
-        border: 1px solid #f0f0f0;
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04);
-        transition: 0.3s;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        background: white;
+    @media (max-width: 991px) {
+        .tour-item {
+            flex: 0 0 calc((100% - 24px) / 2);
+        }
     }
 
-    .tour-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-        border-color: #e2e8f0;
-    }
-
-    .tour-image-wrapper {
-        position: relative;
-        overflow: hidden;
-        border-radius: 20px 20px 0 0;
-    }
-
-    .tour-card img {
-        width: 100%;
-        height: 220px;
-        object-fit: cover;
-        transition: 0.5s;
-    }
-
-    .tour-card:hover img {
-        transform: scale(1.08);
-    }
-
-    .badge-duration {
-        position: absolute;
-        bottom: 12px;
-        left: 12px;
-        background: rgba(0, 0, 0, 0.7);
-        color: white;
-        padding: 5px 12px;
-        border-radius: 30px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        backdrop-filter: blur(4px);
-    }
-
-    .card-body-custom {
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        flex-grow: 1;
-    }
-
-    .tour-title {
-        font-size: 1.15rem;
-        font-weight: 700;
-        color: var(--text-dark);
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        margin-bottom: 12px;
-        line-height: 1.4;
-    }
-
-    .tour-price {
-        color: var(--accent-color);
-        font-weight: 800;
-        font-size: 1.3rem;
-        margin-top: auto;
-        margin-bottom: 15px;
-    }
-
-    .btn-outline-primary-custom {
-        color: var(--primary-color);
-        border: 2px solid #eef7ff;
-        background: #eef7ff;
-        border-radius: 12px;
-        font-weight: 600;
-        padding: 10px;
-        transition: 0.3s;
-    }
-
-    .tour-card:hover .btn-outline-primary-custom {
-        background-color: var(--primary-color);
-        color: white;
-        border-color: var(--primary-color);
+    @media (max-width: 575px) {
+        .tour-item {
+            flex: 0 0 100%;
+        }
     }
 
     .slider-btn {
         position: absolute;
         top: 40%;
         transform: translateY(-50%);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--tvlk-border);
         width: 45px;
         height: 45px;
         border-radius: 50%;
         background: white;
-        color: var(--text-dark);
+        color: var(--tvlk-text);
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         cursor: pointer;
         font-size: 18px;
@@ -374,298 +330,407 @@
     }
 
     .slider-btn:hover {
-        background: var(--primary-color);
+        background: var(--tvlk-blue);
         color: white;
-        border-color: var(--primary-color);
+        border-color: var(--tvlk-blue);
     }
 
     .slider-btn.left {
-        left: -15px;
+        left: -20px;
     }
 
     .slider-btn.right {
-        right: -15px;
+        right: -20px;
     }
 
-    /* --- STATS PARALLAX BANNER (ĐIỂM NHẤN CẮT NGANG MÀU TRẮNG) --- */
-    .stats-section {
-        background: linear-gradient(rgba(1, 148, 243, 0.85), rgba(1, 148, 243, 0.95)), url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1') center/cover fixed;
-        padding: 70px 0;
-        color: white;
-        margin-bottom: 60px;
-    }
-
-    .stat-item h2 {
-        font-size: 3.2rem;
-        font-weight: 800;
-        margin-bottom: 5px;
-    }
-
-    .stat-item p {
-        font-size: 1.1rem;
-        font-weight: 500;
-        opacity: 0.9;
-        margin-bottom: 0;
-    }
-
-    /* --- WHY CHOOSE US & PARTNERS --- */
-    .features-section {
-        padding: 80px 0;
-        background-color: var(--bg-light);
-    }
-
-    .feature-box {
-        text-align: center;
-        padding: 35px 25px;
-        border-radius: 20px;
-        transition: 0.3s;
-        border: 1px solid transparent;
-        background: transparent;
+    /* --- TOUR CARDS --- */
+    .tvlk-card {
+        background: white;
+        border-radius: var(--radius-md);
+        box-shadow: 0 2px 8px rgba(3, 18, 26, 0.08);
+        border: 1px solid var(--tvlk-border);
+        overflow: hidden;
+        transition: 0.2s;
         height: 100%;
-    }
-
-    .feature-box:hover {
-        background: white;
-        border-color: #f0f0f0;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-        transform: translateY(-5px);
-    }
-
-    .feature-icon {
-        width: 70px;
-        height: 70px;
-        background: white;
-        color: var(--primary-color);
-        border-radius: 20px;
         display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 32px;
-        margin: 0 auto 20px auto;
-        transform: rotate(-5deg);
-        transition: 0.3s;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    }
-
-    .feature-box:hover .feature-icon {
-        transform: rotate(0deg);
-        background: var(--primary-color);
-        color: white;
-    }
-
-    .partners-wrapper {
-        background: white;
-        border-radius: 24px;
-        padding: 40px 30px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-        margin-top: 50px;
-    }
-
-    .partners-scroll {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        gap: 30px;
-        opacity: 0.7;
-    }
-
-    .partners-scroll img {
-        height: 40px;
-        filter: grayscale(100%);
-        transition: 0.3s;
-        cursor: pointer;
-    }
-
-    .partners-scroll img:hover {
-        filter: grayscale(0%);
-        opacity: 1;
-        transform: scale(1.1);
-    }
-
-    /* --- NEWSLETTER --- */
-    .newsletter-section {
-        padding: 60px 0;
-        margin-bottom: 0;
-        background-color: var(--bg-light);
-        padding-bottom: 80px;
-    }
-
-    .newsletter-box {
-        background: linear-gradient(135deg, var(--primary-color), #00d2ff);
-        border-radius: 30px;
-        padding: 60px 40px;
-        text-align: center;
-        color: white;
+        flex-direction: column;
         position: relative;
+    }
+
+    .tvlk-card:hover {
+        box-shadow: 0 8px 24px rgba(3, 18, 26, 0.12);
+        transform: translateY(-4px);
+    }
+
+    .discount-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: #e11d48;
+        color: white;
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-weight: 800;
+        font-size: 0.8rem;
+        z-index: 2;
+        box-shadow: 0 2px 8px rgba(225, 29, 72, 0.4);
+    }
+
+    .card-img-box {
+        position: relative;
+        height: 180px;
+    }
+
+    .card-img-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .rating-badge {
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(4px);
+        padding: 4px 8px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--tvlk-text);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .tvlk-card-body {
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+
+    .tour-location {
+        font-size: 0.8rem;
+        color: var(--tvlk-gray);
+        font-weight: 700;
+        margin-bottom: 6px;
+        text-transform: uppercase;
+    }
+
+    .tour-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--tvlk-text);
+        line-height: 1.4;
+        margin-bottom: 12px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
         overflow: hidden;
     }
 
-    .newsletter-box::before {
-        content: "\f124";
-        font-family: "bootstrap-icons";
-        position: absolute;
-        right: -20px;
-        top: -30px;
-        font-size: 200px;
-        opacity: 0.1;
-        transform: rotate(-15deg);
+    .price-box {
+        margin-top: auto;
+        text-align: right;
     }
 
-    .nl-input-group {
-        max-width: 500px;
-        margin: 30px auto 0;
+    .price-old {
+        font-size: 0.85rem;
+        color: var(--tvlk-gray);
+        text-decoration: line-through;
+        margin-bottom: 2px;
+    }
+
+    .price-current {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: var(--tvlk-orange);
+    }
+
+    /* --- CẨM NANG DU LỊCH ĐÃ LÀM GỌN --- */
+    .blog-section {
+        padding: 60px 0;
+        background-color: white;
+        border-top: 1px solid var(--tvlk-border);
+    }
+
+    .blog-card {
         background: white;
-        padding: 8px;
-        border-radius: 50px;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--tvlk-border);
+        overflow: hidden;
+        transition: 0.3s;
+        height: 100%;
         display: flex;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        flex-direction: column;
+        cursor: pointer;
+        text-decoration: none;
+        color: var(--tvlk-text);
     }
 
-    .nl-input-group input {
-        border: none;
-        background: transparent;
-        padding-left: 20px;
-        flex-grow: 1;
-        outline: none;
-        font-weight: 500;
-        color: var(--text-dark);
+    .blog-card:hover {
+        box-shadow: 0 8px 24px rgba(3, 18, 26, 0.08);
+        transform: translateY(-4px);
+        border-color: transparent;
     }
 
-    .nl-btn {
-        background: var(--accent-color);
-        border: none;
+    .blog-img {
+        height: 160px;
+        position: relative;
+    }
+
+    .blog-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .blog-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: var(--tvlk-blue);
         color: white;
-        padding: 12px 30px;
-        border-radius: 50px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
         font-weight: 700;
+    }
+
+    .blog-body {
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        justify-content: space-between;
+    }
+
+    .blog-date {
+        font-size: 0.8rem;
+        color: var(--tvlk-gray);
+        margin-bottom: 6px;
+        font-weight: 500;
+    }
+
+    .blog-title {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--tvlk-text);
+        line-height: 1.4;
+        margin-bottom: 12px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .blog-readmore {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--tvlk-orange);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    /* --- LÝ DO CHỌN VIETTRAVEL (NÂNG CẤP GIAO DIỆN) --- */
+    .why-tvlk {
+        background: var(--tvlk-bg);
+        padding: 80px 0;
+        border-top: 1px solid var(--tvlk-border);
+    }
+
+    .why-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        background: white;
+        padding: 40px 25px;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--tvlk-border);
+        height: 100%;
         transition: 0.3s;
     }
 
-    .nl-btn:hover {
-        background: #e04d14;
+    .why-item:hover {
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+        transform: translateY(-5px);
+        border-color: white;
     }
-    
+
+    .why-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: #e6f5fe;
+        color: var(--tvlk-blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px;
+        margin-bottom: 20px;
+    }
+
+    .why-text h5 {
+        font-size: 1.15rem;
+        font-weight: 800;
+        margin-bottom: 12px;
+        color: var(--tvlk-text);
+    }
+
+    .why-text p {
+        font-size: 0.95rem;
+        color: var(--tvlk-gray);
+        line-height: 1.6;
+        margin: 0;
+    }
 </style>
 
-<div class="hero-section">
-    <div class="container">
-        <span class="slogan-text">Xách balo lên và đi...</span>
-
-        <h1 class="hero-title">Khám phá thế giới cùng TravelVN</h1>
-        <p class="hero-subtitle">Hơn 500+ điểm đến tuyệt vời với giá cực kỳ ưu đãi đang chờ bạn.</p>
+<div class="hero-banner">
+    <div class="hero-title-box">
+        <span class="slogan-text">Đi để thêm yêu Tổ quốc</span>
+        <h1 class="hero-title">Khám phá vẻ đẹp Việt Nam</h1>
     </div>
 </div>
 
-<div class="container hero-search">
-    <div class="search-card">
-        <div class="search-box-inner">
-            <form method="GET" action="index.php">
-                <input type="hidden" name="action" value="tours">
-                <div class="row g-3 align-items-center">
-                    <div class="col-lg-4 col-md-6">
-                        <label class="form-label text-muted fw-bold small ms-1 mb-1"><i class="bi bi-geo-alt"></i> Điểm
-                            đến</label>
-                        <input type="text" name="location" class="form-control form-control-custom border-0 shadow-sm"
-                            placeholder="Bạn muốn đi đâu?">
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <label class="form-label text-muted fw-bold small ms-1 mb-1"><i class="bi bi-calendar-date"></i>
-                            Ngày đi</label>
-                        <input type="date" name="departure_date"
-                            class="form-control form-control-custom border-0 shadow-sm">
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <label class="form-label text-muted fw-bold small ms-1 mb-1"><i class="bi bi-cash"></i> Ngân
-                            sách tối đa</label>
-                        <input type="number" name="max_price"
-                            class="form-control form-control-custom border-0 shadow-sm" placeholder="Ví dụ: 5000000">
-                    </div>
-                    <div class="col-lg-2 col-md-6 d-flex align-items-end">
-                        <button class="btn btn-search w-100 mt-auto shadow-sm">Tìm tour</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+<div class="search-widget-container">
+    <div class="search-widget">
+        <!-- <div class="widget-tabs">
+            <div class="widget-tab active"><i class="bi bi-star-fill text-warning"></i> Tour Nổi Bật</div>
+            <div class="widget-tab" onclick="window.location.href='index.php?action=tours&cat=domestic'"><i class="bi bi-geo-alt-fill"></i> Ngắn ngày</div>
+            <div class="widget-tab" onclick="window.location.href='index.php?action=tours&cat=crossvietnam'"><i class="bi bi-map"></i> Xuyên Việt</div>
+        </div> -->
 
-<div class="container category-section">
-    <h3 class="section-title-sm">Khám phá theo trải nghiệm</h3>
-    <div class="row g-4 justify-content-center">
-        <div class="col-4 col-md-2"><a href="index.php?action=tours&cat=sea" class="cat-item">
-                <div class="cat-icon-box"><i class="bi bi-water"></i></div>
-                <div class="cat-title">Du lịch biển</div>
-            </a></div>
-        <div class="col-4 col-md-2"><a href="index.php?action=tours&cat=mountain" class="cat-item">
-                <div class="cat-icon-box"><i class="bi bi-tree"></i></div>
-                <div class="cat-title">Khám phá núi</div>
-            </a></div>
-        <div class="col-4 col-md-2"><a href="index.php?action=tours&cat=culture" class="cat-item">
-                <div class="cat-icon-box"><i class="bi bi-bank"></i></div>
-                <div class="cat-title">Văn hóa & Lịch sử</div>
-            </a></div>
-        <div class="col-4 col-md-2"><a href="index.php?action=tours&cat=resort" class="cat-item">
-                <div class="cat-icon-box"><i class="bi bi-house-heart"></i></div>
-                <div class="cat-title">Nghỉ dưỡng</div>
-            </a></div>
-        <div class="col-4 col-md-2"><a href="index.php?action=tours&cat=international" class="cat-item">
-                <div class="cat-icon-box"><i class="bi bi-airplane"></i></div>
-                <div class="cat-title">Quốc tế</div>
-            </a></div>
-    </div>
-</div>
-
-<div class="dest-section">
-    <div class="container">
-        <div class="section-header">
-            <h2 class="section-title">Điểm đến thịnh hành</h2>
-            <p class="text-muted">Những địa danh được tìm kiếm và đặt chỗ nhiều nhất trong tháng</p>
-        </div>
-        <div class="row g-4">
-            <div class="col-md-6">
-                <div class="dest-card large" onclick="window.location.href='index.php?action=tours&keyword=Đà Nẵng'">
-                    <img src="uploads/banner1.png" alt="Da Nang">
-                    <div class="dest-overlay">
-                        <h3 class="dest-name">Đà Nẵng</h3>
-                        <div class="dest-count"><i class="bi bi-map me-1"></i> 24+ Tours</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="row g-4">
-                    <div class="col-12">
-                        <div class="dest-card" onclick="window.location.href='index.php?action=tours&keyword=Sapa'">
-                            <img src="uploads/banner2.png" alt="Sapa">
-                            <div class="dest-overlay">
-                                <h3 class="dest-name">Sapa</h3>
-                                <div class="dest-count"><i class="bi bi-map me-1"></i> 18+ Tours</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12">
-                        <div class="dest-card" onclick="window.location.href='index.php?action=tours&keyword=Phú Quốc'">
-                            <img src="uploads/banner3.png" alt="Phu Quoc">
-                            <div class="dest-overlay">
-                                <h3 class="dest-name">Phú Quốc</h3>
-                                <div class="dest-count"><i class="bi bi-map me-1"></i> 32+ Tours</div>
-                            </div>
+        <form method="GET" action="index.php">
+            <input type="hidden" name="action" value="tours">
+            <div class="row g-3 align-items-stretch">
+                <div class="col-lg-4 col-md-6">
+                    <div class="search-input-group">
+                        <i class="bi bi-search"></i>
+                        <div class="w-100">
+                            <label>Địa điểm hoặc tên Tour</label>
+                            <input type="text" name="location" placeholder="Đà Nẵng, Phú Quốc, Sapa...">
                         </div>
                     </div>
                 </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="search-input-group">
+                        <i class="bi bi-calendar-event"></i>
+                        <div class="w-100">
+                            <label>Ngày khởi hành</label>
+                            <input type="date" name="departure_date">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="search-input-group">
+                        <i class="bi bi-cash"></i>
+                        <div class="w-100">
+                            <label>Ngân sách tối đa</label>
+                            <input type="number" name="max_price" placeholder="Ví dụ: 5.000.000">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <button class="btn-tvlk shadow-sm"><i class="bi bi-search"></i> Tìm kiếm</button>
+                </div>
             </div>
+        </form>
+    </div>
+</div>
+
+<div class="container service-menu">
+    <div class="row g-3 justify-content-center">
+        <div class="col-4 col-md-2">
+            <a href="index.php?action=tours&cat=sea" class="service-item">
+                <div class="service-icon bg-sea"><i class="bi bi-water"></i></div>
+                <span class="service-text">Du lịch Biển</span>
+            </a>
+        </div>
+        <div class="col-4 col-md-2">
+            <a href="index.php?action=tours&cat=mountain" class="service-item">
+                <div class="service-icon bg-mountain"><i class="bi bi-tree"></i></div>
+                <span class="service-text">Khám phá Núi</span>
+            </a>
+        </div>
+        <div class="col-4 col-md-2">
+            <a href="index.php?action=tours&cat=culture" class="service-item">
+                <div class="service-icon bg-culture"><i class="bi bi-bank"></i></div>
+                <span class="service-text">Văn hóa & Lịch sử</span>
+            </a>
+        </div>
+        <div class="col-4 col-md-2">
+            <a href="index.php?action=tours&cat=resort" class="service-item">
+                <div class="service-icon bg-resort"><i class="bi bi-house-heart"></i></div>
+                <span class="service-text">Nghỉ dưỡng</span>
+            </a>
+        </div>
+        <div class="col-4 col-md-2">
+            <a href="index.php?action=tours&cat=eco" class="service-item">
+                <div class="service-icon bg-eco"><i class="bi bi-flower1"></i></div>
+                <span class="service-text">Sinh thái</span>
+            </a>
         </div>
     </div>
 </div>
 
-<div class="container mb-5 pt-3">
-    <div class="d-flex justify-content-between align-items-end mb-4">
-        <div>
-            <h2 class="section-title mb-1" style="font-size: 2rem;">🔥 Tour giá tốt hôm nay</h2>
-            <p class="text-muted mb-0">Đặt ngay kẻo lỡ - Số lượng có hạn</p>
-        </div>
-        <a href="index.php?action=tours" class="text-decoration-none fw-bold" style="color: var(--primary-color);">Xem tất
+<div class="container mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="section-title mb-0">Địa điểm được yêu thích nhất</h2>
+        <a href="index.php?action=tours" class="text-decoration-none fw-bold" style="color: var(--tvlk-blue);">Xem tất
             cả <i class="bi bi-arrow-right"></i></a>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-6 col-md-3">
+            <a href="index.php?action=tours&keyword=Đà Nẵng" class="dest-card">
+                <img src="uploads/banner1.png" alt="Đà Nẵng">
+                <div class="dest-info">
+                    <h4 class="dest-title">Đà Nẵng</h4>
+                    <span class="dest-count"><?= $destCounts['danang'] ?? 0 ?> Tour</span>
+                </div>
+            </a>
+        </div>
+        <div class="col-6 col-md-3">
+            <a href="index.php?action=tours&keyword=Phú Quốc" class="dest-card">
+                <img src="uploads/banner2.png" alt="Phú Quốc">
+                <div class="dest-info">
+                    <h4 class="dest-title">Phú Quốc</h4>
+                    <span class="dest-count"><?= $destCounts['phuquoc'] ?? 0 ?> Tour</span>
+                </div>
+            </a>
+        </div>
+        <div class="col-6 col-md-3">
+            <a href="index.php?action=tours&keyword=Sapa" class="dest-card">
+                <img src="uploads/banner3.png" alt="Sapa">
+                <div class="dest-info">
+                    <h4 class="dest-title">Sapa</h4>
+                    <span class="dest-count"><?= $destCounts['sapa'] ?? 0 ?> Tour</span>
+                </div>
+            </a>
+        </div>
+        <div class="col-6 col-md-3">
+            <a href="index.php?action=tours&keyword=Đà Lạt" class="dest-card">
+                <img src="uploads/banner4.jpg" alt="Đà Lạt">
+                <div class="dest-info">
+                    <h4 class="dest-title">Đà Lạt</h4>
+                    <span class="dest-count"><?= $destCounts['dalat'] ?? 0 ?> Tour</span>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container mb-5 pb-2">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h2 class="section-title mb-0">🔥 Tour có giá tốt nhất hôm nay</h2>
+            <p class="text-muted mt-1 mb-0">Đừng bỏ lỡ các ưu đãi chớp nhoáng với số lượng có hạn</p>
+        </div>
+        <a href="index.php?action=tours" class="text-decoration-none fw-bold" style="color: var(--tvlk-blue);">Xem tất
+            cả</a>
     </div>
 
     <div class="slider-wrapper">
@@ -675,31 +740,31 @@
         <div class="tour-scroll" id="tourScroll">
             <?php while ($tour = $stmt->fetch(PDO::FETCH_ASSOC)): ?>
                 <div class="tour-item">
-                    <div class="card tour-card">
-                        <div class="tour-image-wrapper">
-                            <img src="<?= !empty($tour['image']) ? '../public/uploads/' . $tour['image'] : 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800' ?>"
-                                alt="<?= htmlspecialchars($tour['tour_name']) ?>">
-                            <span class="badge-duration"><i class="bi bi-clock-history me-1"></i><?= $tour['duration'] ?>
-                                ngày</span>
-                        </div>
-                        <div class="card-body-custom">
-                            <div class="text-muted small mb-1"><i
-                                    class="bi bi-geo-alt-fill text-danger me-1"></i><?= htmlspecialchars($tour['destination']) ?>
-                            </div>
-                            
-                            <a href="index.php?action=detail&id=<?= $tour['tour_id'] ?>" class="text-decoration-none text-dark">
-                                <h5 class="tour-title"><?= htmlspecialchars($tour['tour_name']) ?></h5>
-                            </a>
-                            
-                            <p class="tour-price"><?= number_format($tour['price']) ?> <span
-                                    style="font-size: 0.9rem; font-weight: 500; color: #6c757d;">VNĐ</span></p>
+                    <a href="index.php?action=detail&id=<?= $tour['tour_id'] ?>" class="text-decoration-none">
+                        <div class="tvlk-card">
+                            <div class="discount-badge">-20%</div>
 
-                            <a href="index.php?action=detail&id=<?= $tour['tour_id'] ?>"
-                                class="btn btn-outline-primary-custom w-100 text-center d-block text-decoration-none mt-auto">
-                                Xem chi tiết
-                            </a>
+                            <div class="card-img-box">
+                                <img src="<?= !empty($tour['image']) ? '../public/uploads/' . $tour['image'] : 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800' ?>"
+                                    alt="<?= htmlspecialchars($tour['tour_name']) ?>">
+                                <div class="rating-badge"><i class="bi bi-star-fill text-warning"></i> 4.8 <span
+                                        class="text-muted fw-normal">(120)</span></div>
+                            </div>
+
+                            <div class="tvlk-card-body">
+                                <div class="tour-location"><i class="bi bi-geo-alt-fill me-1"
+                                        style="color: var(--tvlk-blue);"></i> <?= htmlspecialchars($tour['destination']) ?>
+                                </div>
+                                <h5 class="tour-title"><?= htmlspecialchars($tour['tour_name']) ?></h5>
+
+                                <div class="price-box">
+                                    <?php $oldPrice = $tour['price'] * 1.2; ?>
+                                    <div class="price-old"><?= number_format($oldPrice) ?> VND</div>
+                                    <div class="price-current"><?= number_format($tour['price']) ?> VND</div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
             <?php endwhile; ?>
         </div>
@@ -710,77 +775,105 @@
 </div>
 
 <script>
-    function scrollLeftTour() { document.getElementById('tourScroll').scrollBy({ left: -344, behavior: 'smooth' }); }
-    function scrollRightTour() { document.getElementById('tourScroll').scrollBy({ left: 344, behavior: 'smooth' }); }
+    function scrollLeftTour() {
+        const slider = document.getElementById('tourScroll');
+        slider.scrollBy({ left: -(slider.clientWidth), behavior: 'smooth' });
+    }
+    function scrollRightTour() {
+        const slider = document.getElementById('tourScroll');
+        slider.scrollBy({ left: slider.clientWidth, behavior: 'smooth' });
+    }
+
+    const slider = document.getElementById('tourScroll');
+    let isDown = false; let startX; let scrollLeft;
+    slider.addEventListener('mousedown', (e) => { isDown = true; startX = e.pageX - slider.offsetLeft; scrollLeft = slider.scrollLeft; });
+    slider.addEventListener('mouseleave', () => { isDown = false; });
+    slider.addEventListener('mouseup', () => { isDown = false; });
+    slider.addEventListener('mousemove', (e) => { if (!isDown) return; e.preventDefault(); const x = e.pageX - slider.offsetLeft; const walk = (x - startX) * 2; slider.scrollLeft = scrollLeft - walk; });
 </script>
 
-<div class="features-section border-top">
+<div class="blog-section">
     <div class="container">
-        <div class="section-header">
-            <h2 class="section-title">Vì sao chọn TravelVN?</h2>
-            <p class="text-muted">Chúng tôi cam kết mang lại trải nghiệm tuyệt vời nhất cho mỗi chuyến đi của bạn</p>
-        </div>
-        <div class="row g-4">
-            <div class="col-lg-3 col-md-6">
-                <div class="feature-box">
-                    <div class="feature-icon"><i class="bi bi-shield-check"></i></div>
-                    <h5 class="fw-bold">An toàn & Uy tín</h5>
-                    <p class="text-muted small mb-0">Đối tác của các hãng hàng không và khách sạn 5 sao hàng đầu.</p>
-                </div>
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <h2 class="section-title mb-0">Cẩm nang du lịch</h2>
+                <p class="text-muted mt-1 mb-0">Kinh nghiệm và mẹo hay cho chuyến đi hoàn hảo</p>
             </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="feature-box">
-                    <div class="feature-icon"><i class="bi bi-wallet2"></i></div>
-                    <h5 class="fw-bold">Giá tốt nhất</h5>
-                    <p class="text-muted small mb-0">Cam kết hoàn tiền nếu bạn tìm thấy giá rẻ hơn ở nơi khác.</p>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="feature-box">
-                    <div class="feature-icon"><i class="bi bi-headset"></i></div>
-                    <h5 class="fw-bold">Hỗ trợ 24/7</h5>
-                    <p class="text-muted small mb-0">Đội ngũ CSKH luôn sẵn sàng giải quyết mọi vấn đề của bạn.</p>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="feature-box">
-                    <div class="feature-icon"><i class="bi bi-credit-card"></i></div>
-                    <h5 class="fw-bold">Thanh toán dễ dàng</h5>
-                    <p class="text-muted small mb-0">Hỗ trợ quét mã VietQR, thẻ tín dụng, ATM nội địa cực nhanh.</p>
-                </div>
-            </div>
+            <a href="index.php?action=blogs" class="text-decoration-none fw-bold" style="color: var(--tvlk-blue);">Xem
+                tất cả bài viết</a>
         </div>
 
-        <div class="partners-wrapper">
-            <h5 class="text-center text-muted fw-bold mb-4">Các đối tác đồng hành cùng chúng tôi</h5>
-            <div class="partners-scroll">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Vietnam_Airlines_logo.svg/512px-Vietnam_Airlines_logo.svg.png"
-                    alt="VN Airlines" style="height: 35px;">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/VietJet_Air_logo.svg/512px-VietJet_Air_logo.svg.png"
-                    alt="Vietjet" style="height: 40px;">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Agoda_transparent_logo.png/512px-Agoda_transparent_logo.png"
-                    alt="Agoda" style="height: 35px;">
-                <img src="https://upload.wikimedia.org/wikipedia/vi/thumb/8/87/Traveloka_Primary_Logo.png/512px-Traveloka_Primary_Logo.png"
-                    alt="Traveloka" style="height: 35px;">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Logo_MB_new.png/512px-Logo_MB_new.png"
-                    alt="MBBank" style="height: 40px;">
-            </div>
+        <div class="row g-4">
+            <?php if (!empty($blogs)): ?>
+                <?php foreach ($blogs as $blog): ?>
+                    <div class="col-lg-3 col-md-6">
+                        <a href="index.php?action=blogDetail&id=<?= $blog['id'] ?? $blog['blog_id'] ?>" class="blog-card">
+                            <div class="blog-img">
+                                <span class="blog-badge"><?= htmlspecialchars($blog['category'] ?? 'Cẩm nang') ?></span>
+                                <img src="<?= !empty($blog['image']) ? (strpos($blog['image'], 'http') === 0 ? $blog['image'] : '../public/uploads/' . $blog['image']) : 'https://images.unsplash.com/photo-1542640244-7e672d6cb466?auto=format&fit=crop&w=600&q=80' ?>"
+                                    alt="<?= htmlspecialchars($blog['title'] ?? 'Bài viết') ?>">
+                            </div>
+                            <div class="blog-body">
+                                <div>
+                                    <div class="blog-date"><i class="bi bi-calendar3 me-1"></i>
+                                        <?= !empty($blog['created_at']) ? date('d/m/Y', strtotime($blog['created_at'])) : date('d/m/Y') ?>
+                                    </div>
+                                    <h5 class="blog-title"><?= htmlspecialchars($blog['title'] ?? 'Đang cập nhật tiêu đề') ?>
+                                    </h5>
+                                </div>
+                                <span class="blog-readmore mt-2">Đọc tiếp <i class="bi bi-arrow-right"></i></span>
+                            </div>
+                        </a>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="col-12 text-center text-muted">
+                    <p class="py-4 border rounded bg-light border-dashed">Hệ thống đang cập nhật các bài viết cẩm nang mới
+                        nhất.</p>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 </div>
 
-<div class="newsletter-section">
+<div class="why-tvlk">
     <div class="container">
-        <div class="newsletter-box shadow-lg">
-            <h2 class="fw-bold mb-3">Săn mã giảm giá lên đến 50%</h2>
-            <p class="fs-5 opacity-75 mb-0">Đăng ký email để nhận ngay các ưu đãi độc quyền hàng tuần từ TravelVN</p>
-            <form action="#" method="POST">
-                <div class="nl-input-group">
-                    <input type="email" placeholder="Nhập địa chỉ email của bạn" required>
-                    <button type="submit" class="nl-btn">Nhận mã</button>
+        <div class="text-center mb-5">
+            <h2 class="section-title mb-2" style="font-size: 2rem;">Lý do tại sao nên đặt tour với VIETTRAVEL</h2>
+            <p class="text-muted fs-5">Tự hào là thương hiệu du lịch hàng đầu Việt Nam, mang đến trải nghiệm đẳng cấp.
+            </p>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="why-item">
+                    <div class="why-icon"><i class="bi bi-award-fill"></i></div>
+                    <div class="why-text">
+                        <h5>Thương hiệu Uy tín</h5>
+                        <p>Dù mới vào nghề, nhưng TravelVN tự hào là một trong những nhà tổ chức tour du lịch hàng đầu và chuyên nghiệp
+                        tại Việt Nam.</p>
+                    </div>
                 </div>
-            </form>
-            <p class="small opacity-50 mt-3 mb-0">*Chúng tôi cam kết không gửi thư rác.</p>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="why-item">
+                    <div class="why-icon"><i class="bi bi-gem"></i></div>
+                    <div class="why-text">
+                        <h5>Chất lượng Tiên phong</h5>
+                        <p>Dịch vụ trọn gói đạt chuẩn quốc tế, mạng lưới đối tác rộng khắp đảm bảo mang lại mức giá và
+                            chất lượng tốt nhất.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="why-item">
+                    <div class="why-icon"><i class="bi bi-headset"></i></div>
+                    <div class="why-text">
+                        <h5>Chăm sóc Tận tâm 24/7</h5>
+                        <p>Đội ngũ nhân viên và hướng dẫn viên nhiệt huyết, hỗ trợ khách hàng chu đáo trên mọi nẻo đường
+                            hành trình.</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

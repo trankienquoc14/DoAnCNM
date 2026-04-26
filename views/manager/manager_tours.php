@@ -93,16 +93,24 @@
                 </div>
             </div>
 
+            <?php if (isset($_SESSION['success'])): ?>
+                <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i> <?= $_SESSION['success']; unset($_SESSION['success']); ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
+
             <div class="admin-card">
                 <div class="table-responsive">
                     <table class="table table-hover mb-0 align-middle">
                         <thead>
                             <tr>
                                 <th width="5%" class="text-center border-top-0">ID</th>
-                                <th width="30%" class="border-top-0">Tên Tour</th>
-                                <th width="20%" class="border-top-0">Điểm đến</th>
+                                <th width="12%" class="text-center border-top-0">Hình ảnh</th>
+                                <th width="25%" class="border-top-0">Tên Tour</th>
+                                <th width="15%" class="border-top-0">Điểm đến</th>
                                 <th width="15%" class="border-top-0">Giá (VNĐ)</th>
-                                <th width="15%" class="border-top-0">Thời gian</th>
+                                <th width="13%" class="border-top-0">Thời gian</th>
                                 <th width="15%" class="text-center border-top-0">Hành động</th>
                             </tr>
                         </thead>
@@ -111,8 +119,24 @@
                                 <?php while ($row = $tours->fetch(PDO::FETCH_ASSOC)): ?>
                                     <tr>
                                         <td class="text-center fw-bold text-muted">#<?= $row['tour_id'] ?></td>
-                                        <td class="fw-bold"><?= htmlspecialchars($row['tour_name']) ?></td>
-                                        <td><?= htmlspecialchars($row['destination']) ?></td>
+                                        
+                                        <td class="text-center">
+                                            <?php 
+                                                $imgSrc = !empty($row['image']) ? (strpos($row['image'], 'http') === 0 ? $row['image'] : '../public/uploads/' . $row['image']) : 'https://via.placeholder.com/150'; 
+                                            ?>
+                                            <img src="<?= $imgSrc ?>" alt="img" class="rounded border shadow-sm" style="width: 70px; height: 50px; object-fit: cover;">
+                                        </td>
+
+                                        <td>
+                                            <div class="fw-bold" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;" title="<?= htmlspecialchars($row['tour_name']) ?>">
+                                                <?= htmlspecialchars($row['tour_name']) ?>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-light text-primary border border-primary border-opacity-25 rounded-pill px-2 py-1">
+                                                <i class="bi bi-geo-alt-fill me-1"></i><?= htmlspecialchars($row['destination']) ?>
+                                            </span>
+                                        </td>
                                         <td class="text-danger fw-bold"><?= number_format($row['price']) ?> đ</td>
                                         <td><?= htmlspecialchars($row['duration']) ?> ngày</td>
                                         <td>
@@ -129,7 +153,7 @@
                                 <?php endwhile; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="6" class="text-center py-5 text-muted">
+                                    <td colspan="7" class="text-center py-5 text-muted">
                                         <i class="bi bi-inbox fs-1 d-block mb-2"></i>
                                         Chưa có dữ liệu tour nào trên hệ thống.
                                     </td>

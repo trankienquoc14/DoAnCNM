@@ -33,6 +33,7 @@ switch ($action) {
     case 'deleteTour':
         $controller->deleteTour();
         break;
+
     case 'partners':
         $controller->partners();
         break;
@@ -56,6 +57,7 @@ switch ($action) {
     case 'deletePartner':
         $controller->deletePartner();
         break;
+
     case 'departures':
         $controller->departures();
         break;
@@ -79,15 +81,22 @@ switch ($action) {
     case 'deleteDeparture':
         $controller->deleteDeparture();
         break;
+
     case 'bookings':
         $controller->bookings();
         break;
+
     case 'bookingDetail':
         $controller->bookingDetail();
         break;
 
     case 'confirmBooking':
         $controller->confirmBooking();
+        break;
+
+    // 🔥 ĐÂY CHÍNH LÀ ĐOẠN BẠN CẦN THÊM VÀO 🔥
+    case 'confirmCash':
+        $controller->confirmCash();
         break;
 
     case 'cancelBooking':
@@ -97,10 +106,33 @@ switch ($action) {
     case 'refundBooking':
         $controller->refundBooking();
         break;
+
     case 'report':
         $controller->report();
         break;
 
+    case 'report':
+        $controller->report();
+        break;
+
+    // ================= QUẢN LÝ BÀI VIẾT (CẨM NANG) =================
+    case 'blogs':
+        $controller->blogs();
+        break;
+
+    case 'blogForm':
+        $controller->blogForm();
+        break;
+
+    case 'saveBlog':
+        $controller->saveBlog();
+        break;
+
+    case 'deleteBlog':
+        $controller->deleteBlog();
+        break;
+
     default:
-        echo "404";
+        // Thay vì chỉ in 404, bạn có thể in ra action bị lỗi để dễ fix bug hơn
+        echo "<h2 style='text-align:center; margin-top:50px;'>Lỗi 404: Không tìm thấy action '{$action}'</h2>";
 }
