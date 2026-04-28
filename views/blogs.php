@@ -40,26 +40,95 @@
 
     /* --- CẨM NANG DU LỊCH --- */
     .blog-card {
-        background: white; border-radius: 16px;
-        border: 1px solid var(--tvlk-border); overflow: hidden;
-        transition: 0.3s; height: 100%; display: flex; flex-direction: column;
-        cursor: pointer; text-decoration: none; color: var(--tvlk-text);
+        background: white;
+        border-radius: 16px;
+        border: 1px solid var(--tvlk-border);
+        overflow: hidden;
+        transition: 0.3s;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        cursor: pointer;
+        text-decoration: none;
+        color: var(--tvlk-text);
     }
+
     .blog-card:hover {
-        box-shadow: 0 8px 24px rgba(3, 18, 26, 0.08); transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(3, 18, 26, 0.08);
+        transform: translateY(-4px);
     }
-    .blog-img { height: 200px; position: relative; }
-    .blog-img img { width: 100%; height: 100%; object-fit: cover; }
+
+    .blog-img {
+        height: 200px;
+        position: relative;
+    }
+
+    .blog-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
     .blog-badge {
-        position: absolute; top: 15px; left: 15px;
-        background: rgba(1, 148, 243, 0.9); color: white; backdrop-filter: blur(4px);
-        padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase;
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        background: rgba(1, 148, 243, 0.9);
+        color: white;
+        backdrop-filter: blur(4px);
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
     }
-    .blog-body { padding: 20px; display: flex; flex-direction: column; flex-grow: 1; }
-    .blog-date { font-size: 0.85rem; color: var(--tvlk-gray); margin-bottom: 10px; font-weight: 600;}
-    .blog-title { font-size: 1.2rem; font-weight: 800; color: var(--tvlk-text); line-height: 1.4; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    .blog-desc { font-size: 0.95rem; color: var(--tvlk-gray); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 20px; }
-    .blog-readmore { margin-top: auto; font-size: 0.95rem; font-weight: 700; color: var(--tvlk-orange); display: flex; align-items: center; gap: 5px; }
+
+    .blog-body {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+
+    .blog-date {
+        font-size: 0.85rem;
+        color: var(--tvlk-gray);
+        margin-bottom: 10px;
+        font-weight: 600;
+    }
+
+    .blog-title {
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: var(--tvlk-text);
+        line-height: 1.4;
+        margin-bottom: 12px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .blog-desc {
+        font-size: 0.95rem;
+        color: var(--tvlk-gray);
+        line-height: 1.6;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+
+    .blog-readmore {
+        margin-top: auto;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--tvlk-orange);
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
 </style>
 
 <div class="page-header">
@@ -74,17 +143,18 @@
         <?php if (!empty($blogsList)): ?>
             <?php foreach ($blogsList as $blog): ?>
                 <div class="col-lg-4 col-md-6">
-                    <a href="index.php?action=blogDetail&id=<?= $blog['blog_id'] ?>" class="blog-card">
+                    <a href="index.php?action=blogDetail&slug=<?= $blog['slug'] ?>" class="blog-card">
                         <div class="blog-img">
                             <span class="blog-badge"><?= htmlspecialchars($blog['category'] ?? 'Khám phá') ?></span>
-                            <?php 
-                                // Xử lý link ảnh (nếu là link web thì giữ nguyên, nếu là file thì thêm folder uploads)
-                                $imgSrc = !empty($blog['image']) ? (strpos($blog['image'], 'http') === 0 ? $blog['image'] : '../public/uploads/' . $blog['image']) : 'https://images.unsplash.com/photo-1542640244-7e672d6cb466?auto=format&fit=crop&w=600&q=80';
+                            <?php
+                            // Xử lý link ảnh (nếu là link web thì giữ nguyên, nếu là file thì thêm folder uploads)
+                            $imgSrc = !empty($blog['image']) ? (strpos($blog['image'], 'http') === 0 ? $blog['image'] : '../public/uploads/' . $blog['image']) : 'https://images.unsplash.com/photo-1542640244-7e672d6cb466?auto=format&fit=crop&w=600&q=80';
                             ?>
                             <img src="<?= $imgSrc ?>" alt="<?= htmlspecialchars($blog['title']) ?>">
                         </div>
                         <div class="blog-body">
-                            <span class="blog-date"><i class="bi bi-calendar3 me-1 text-primary"></i> <?= date('d/m/Y', strtotime($blog['created_at'])) ?></span>
+                            <span class="blog-date"><i class="bi bi-calendar3 me-1 text-primary"></i>
+                                <?= date('d/m/Y', strtotime($blog['created_at'])) ?></span>
                             <h5 class="blog-title"><?= htmlspecialchars($blog['title']) ?></h5>
                             <p class="blog-desc"><?= htmlspecialchars($blog['short_desc'] ?? 'Đang cập nhật nội dung...') ?></p>
                             <span class="blog-readmore">Đọc tiếp <i class="bi bi-arrow-right"></i></span>

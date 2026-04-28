@@ -40,6 +40,10 @@ class ComposerStaticInitbf01bc507e2f5dd39f9847d290341722
             'Psr\\Http\\Client\\' => 16,
             'ParagonIE\\Sodium\\' => 17,
         ),
+        'H' =>
+        array (
+            'Hashids\\' => 8,
+        ),
         'G' =>
         array (
             'GuzzleHttp\\Psr7\\' => 16,
@@ -109,6 +113,10 @@ class ComposerStaticInitbf01bc507e2f5dd39f9847d290341722
         'ParagonIE\\Sodium\\' =>
         array (
             0 => __DIR__ . '/..' . '/paragonie/sodium_compat/namespaced',
+        ),
+        'Hashids\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/hashids/hashids/src',
         ),
         'GuzzleHttp\\Psr7\\' =>
         array (

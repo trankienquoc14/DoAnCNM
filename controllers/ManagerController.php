@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
-
+require_once __DIR__ . '/../config/helpers.php';
 class ManagerController
 {
     private $db;
@@ -33,9 +33,9 @@ class ManagerController
         $totalRevenue = $this->db->query("
             SELECT COALESCE(SUM(total_price),0) 
             FROM bookings 
-            WHERE status='confirmed'
+            WHERE status IN ('confirmed','completed','checked_in')
+            AND DATE(booking_date) BETWEEN DATE_FORMAT(NOW(), '%Y-%m-01') AND CURDATE()
         ")->fetchColumn();
-
         $userName = $_SESSION['user']['full_name']
             ?? $_SESSION['user']['name']
             ?? 'Quản trị viên';
@@ -77,15 +77,20 @@ class ManagerController
             move_uploaded_file($_FILES['image']['tmp_name'], "../public/uploads/" . $imageName);
         }
 
-        $stmt = $this->db->prepare("
-        INSERT INTO tours 
-        (partner_id, tour_name, destination, description, price, duration, status, created_by, hotel, include_service, exclude_service, itinerary, image)
-        VALUES (?, ?, ?, ?, ?, ?, 'active', ?, ?, ?, ?, ?, ?)
-    ");
+        $slug = create_slug($_POST['tour_name']);
 
+        // SỬA SQL: Thêm cột `slug` và 1 dấu `?`
+        $stmt = $this->db->prepare("
+            INSERT INTO tours 
+            (partner_id, tour_name, slug, destination, description, price, duration, status, created_by, hotel, include_service, exclude_service, itinerary, image)
+            VALUES (?, ?, ?, ?, ?, ?, ?, 'active', ?, ?, ?, ?, ?, ?)
+        ");
+
+        // SỬA MẢNG EXECUTE: Nhét biến $slug vào đúng vị trí thứ 3
         $stmt->execute([
             $_POST['partner_id'],
             $_POST['tour_name'],
+            $slug, // <--- THÊM BIẾN NÀY VÀO ĐÂY
             $_POST['destination'],
             $_POST['description'],
             $_POST['price'],
@@ -150,26 +155,32 @@ class ManagerController
                 move_uploaded_file($_FILES['image']['tmp_name'], $targetDir . $imageName);
             }
 
-            $stmt = $this->db->prepare("
-    UPDATE tours 
-    SET 
-        partner_id=?,
-        tour_name=?,
-        destination=?,
-        description=?,
-        price=?,
-        duration=?,
-        hotel=?,
-        include_service=?,
-        exclude_service=?,
-        itinerary=?,
-        image=?
-    WHERE tour_id=?
-");
+            $slug = create_slug($_POST['tour_name']);
 
+            // SỬA SQL: Thêm dòng `slug=?,`
+            $stmt = $this->db->prepare("
+                UPDATE tours 
+                SET 
+                    partner_id=?,
+                    tour_name=?,
+                    slug=?, 
+                    destination=?,
+                    description=?,
+                    price=?,
+                    duration=?,
+                    hotel=?,
+                    include_service=?,
+                    exclude_service=?,
+                    itinerary=?,
+                    image=?
+                WHERE tour_id=?
+            ");
+
+            // SỬA MẢNG EXECUTE: Nhét biến $slug vào đúng vị trí thứ 3
             $stmt->execute([
                 $_POST['partner_id'],
                 $_POST['tour_name'],
+                $slug, // <--- THÊM BIẾN NÀY VÀO ĐÂY
                 $_POST['destination'],
                 $_POST['description'],
                 $_POST['price'],
@@ -604,50 +615,77 @@ class ManagerController
 
     public function report()
     {
-        // ===== Tổng quan =====
-        $totalRevenue = $this->db->query("
-        SELECT COALESCE(SUM(total_price),0) 
-        FROM bookings 
-        WHERE status='confirmed'
-    ")->fetchColumn();
+        // 1. Lấy tham số từ bộ lọc (Nếu rỗng thì để mặc định)
+        $startDate = !empty($_GET['start_date']) ? $_GET['start_date'] : date('Y-m-01');
+        $endDate = !empty($_GET['end_date']) ? $_GET['end_date'] : date('Y-m-d');
+        $statusFilter = $_GET['status'] ?? '';
 
-        $totalBookings = $this->db->query("
-        SELECT COUNT(*) FROM bookings
-    ")->fetchColumn();
+        // Tạo câu điều kiện WHERE chung cho các truy vấn
+        $where = "WHERE DATE(b.booking_date) BETWEEN ? AND ?";
+        $params = [$startDate, $endDate];
 
-        $totalTours = $this->db->query("
-        SELECT COUNT(*) FROM tours
-    ")->fetchColumn();
+        // Nếu có lọc theo trạng thái
+        $whereStatus = $where;
+        $paramsStatus = $params;
+        if ($statusFilter !== '') {
+            $whereStatus .= " AND b.status = ?";
+            $paramsStatus[] = $statusFilter;
+        }
 
-        // ===== Doanh thu theo tháng =====
-        $revenueByMonth = $this->db->query("
-        SELECT 
-            DATE_FORMAT(booking_date, '%m/%Y') as month,
-            SUM(total_price) as revenue
-        FROM bookings
-        WHERE status='confirmed'
-        GROUP BY month
-        ORDER BY booking_date ASC
-    ")->fetchAll(PDO::FETCH_ASSOC);
+        // ===== Tổng quan (Áp dụng bộ lọc) =====
+        // Doanh thu: Chỉ tính các đơn confirmed hoặc completed, không tính đơn cancelled
+        $stmtRev = $this->db->prepare("
+            SELECT COALESCE(SUM(total_price), 0) 
+            FROM bookings b 
+            $where AND b.status IN ('confirmed', 'completed', 'checked_in')
+        ");
+        $stmtRev->execute($params);
+        $totalRevenue = $stmtRev->fetchColumn();
 
-        // ===== Top tour =====
-        $topTours = $this->db->query("
-        SELECT t.tour_name, COUNT(b.booking_id) as total
-        FROM bookings b
-        JOIN departures d ON b.departure_id = d.departure_id
-        JOIN tours t ON d.tour_id = t.tour_id
-        WHERE b.status='confirmed'
-        GROUP BY t.tour_id
-        ORDER BY total DESC
-        LIMIT 5
-    ")->fetchAll(PDO::FETCH_ASSOC);
+        // Tổng đơn đặt (Áp dụng lọc trạng thái nếu có)
+        $stmtCount = $this->db->prepare("SELECT COUNT(*) FROM bookings b $whereStatus");
+        $stmtCount->execute($paramsStatus);
+        $totalBookings = $stmtCount->fetchColumn();
 
-        // ===== Trạng thái =====
-        $statusStats = $this->db->query("
-        SELECT status, COUNT(*) as total
-        FROM bookings
-        GROUP BY status
-    ")->fetchAll(PDO::FETCH_ASSOC);
+        // Tổng tour đang hoạt động (Thống kê chung)
+        $totalTours = $this->db->query("SELECT COUNT(*) FROM tours WHERE status = 'active'")->fetchColumn();
+
+        // ===== Doanh thu theo ngày/tháng (Dùng cho biểu đồ Line) =====
+        $stmtChart = $this->db->prepare("
+            SELECT 
+                DATE_FORMAT(booking_date, '%d/%m') as month,
+                SUM(total_price) as revenue
+            FROM bookings b
+            $where AND b.status IN ('confirmed', 'completed', 'checked_in')
+            GROUP BY month
+            ORDER BY booking_date ASC
+        ");
+        $stmtChart->execute($params);
+        $revenueByMonth = $stmtChart->fetchAll(PDO::FETCH_ASSOC);
+
+        // ===== Top 5 tour bán chạy (Dùng cho biểu đồ Bar) =====
+        $stmtTop = $this->db->prepare("
+            SELECT t.tour_name, COUNT(b.booking_id) as total
+            FROM bookings b
+            JOIN departures d ON b.departure_id = d.departure_id
+            JOIN tours t ON d.tour_id = t.tour_id
+            $whereStatus
+            GROUP BY t.tour_id
+            ORDER BY total DESC
+            LIMIT 5
+        ");
+        $stmtTop->execute($paramsStatus);
+        $topTours = $stmtTop->fetchAll(PDO::FETCH_ASSOC);
+
+        // ===== Thống kê trạng thái (Dùng cho biểu đồ Pie/Doughnut) =====
+        $stmtStatus = $this->db->prepare("
+            SELECT status, COUNT(*) as total
+            FROM bookings b
+            $where
+            GROUP BY status
+        ");
+        $stmtStatus->execute($params);
+        $statusStats = $stmtStatus->fetchAll(PDO::FETCH_ASSOC);
 
         require __DIR__ . '/../views/manager/report.php';
     }
@@ -781,16 +819,16 @@ class ManagerController
                     $imageName = $newImageName;
                 }
             }
-
+            $slug = create_slug($title);
             if ($id > 0) {
                 // SỬA BÀI
-                $stmt = $this->db->prepare("UPDATE blogs SET title=?, category=?, short_desc=?, content=?, image=? WHERE blog_id=?");
-                $stmt->execute([$title, $category, $short_desc, $content, $imageName, $id]);
+                $stmt = $this->db->prepare("UPDATE blogs SET title=?, slug=?, category=?, short_desc=?, content=?, image=? WHERE blog_id=?");
+                $stmt->execute([$title, $slug, $category, $short_desc, $content, $imageName, $id]);
                 $_SESSION['success'] = "Đã cập nhật bài viết thành công!";
             } else {
                 // THÊM BÀI MỚI
-                $stmt = $this->db->prepare("INSERT INTO blogs (title, category, short_desc, content, image) VALUES (?, ?, ?, ?, ?)");
-                $stmt->execute([$title, $category, $short_desc, $content, $imageName]);
+                $stmt = $this->db->prepare("INSERT INTO blogs (title, slug, category, short_desc, content, image) VALUES (?, ?, ?, ?, ?, ?)");
+                $stmt->execute([$title, $slug, $category, $short_desc, $content, $imageName]);
                 $_SESSION['success'] = "Đã thêm bài viết mới thành công!";
             }
 

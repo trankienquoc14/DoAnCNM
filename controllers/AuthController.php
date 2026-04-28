@@ -52,7 +52,7 @@ class AuthController
                         ];
                         
                         // Đăng nhập xong -> Chuyển hướng qua index.php
-                        header("Location: index.php?action=tours");
+                        header("Location: index.php?action=home");
                         exit();
                     } else {
                         $error = "Sai mật khẩu";

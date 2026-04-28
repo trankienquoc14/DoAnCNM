@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../controllers/ManagerController.php';
-
+require_once '../config/helpers.php';
 $controller = new ManagerController();
 
 $action = $_GET['action'] ?? 'dashboard';

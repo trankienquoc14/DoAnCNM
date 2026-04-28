@@ -9,6 +9,7 @@ require_once '../controllers/TourController.php';
 require_once '../controllers/PaymentController.php';
 require_once '../controllers/AuthController.php';
 require_once '../controllers/ReviewController.php';
+require_once '../config/helpers.php';
 // 🔥 BỔ SUNG: Nhúng ChatController vào hệ thống
 require_once '../controllers/ChatController.php';
 

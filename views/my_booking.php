@@ -477,11 +477,11 @@
 
                                         <div class="action-buttons w-100 d-flex flex-column gap-2 mt-auto">
                                             <?php if ($payMethod == 'QR' && $payStatus == 'pending' && $b['status'] != 'cancelled'): ?>
-                                                <a href="index.php?action=payment&payment_id=<?= $b['payment_id'] ?? 0 ?>&booking_id=<?= $b['booking_id'] ?>"
+                                                <a href="index.php?action=payment&payment_id=<?= encode_id($b['payment_id'] ?? 0) ?>&booking_id=<?= encode_id($b['booking_id']) ?>"
                                                     class="btn-action btn-payment">Thanh toán ngay</a>
                                             <?php endif; ?>
 
-                                            <a href="index.php?action=bookingDetail&booking_id=<?= $b['booking_id'] ?>"
+                                            <a href="index.php?action=bookingDetail&booking_id=<?= encode_id($b['booking_id']) ?>"
                                                 class="btn-action btn-detail">Xem chi tiết</a>
 
                                             <?php if ($b['status'] == 'completed'): ?>
@@ -495,7 +495,7 @@
                                             $daysRemaining = (strtotime($b['start_date']) - time()) / (60 * 60 * 24);
                                             if ($b['status'] !== 'cancelled' && $b['status'] !== 'completed' && $daysRemaining >= 3):
                                                 ?>
-                                                <a href="index.php?action=cancelBooking&booking_id=<?= $b['booking_id'] ?>"
+                                                <a href="index.php?action=cancelBooking&booking_id=<?= encode_id($b['booking_id']) ?>"
                                                     class="btn-action btn-cancel"
                                                     onclick="return confirm('Bạn có chắc chắn muốn hủy chuyến đi này? Thao tác này không thể hoàn tác!');">
                                                     Hủy tour

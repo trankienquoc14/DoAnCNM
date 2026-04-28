@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../controllers/GuideController.php';
 // 1. Nhúng ChatController vào để xử lý API tin nhắn
 require_once __DIR__ . '/../controllers/ChatController.php';
-
+require_once '../config/helpers.php';
 $controller = new GuideController();
 $chatController = new ChatController(); // Khởi tạo controller chat
 

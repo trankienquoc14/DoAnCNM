@@ -740,7 +740,7 @@
         <div class="tour-scroll" id="tourScroll">
             <?php while ($tour = $stmt->fetch(PDO::FETCH_ASSOC)): ?>
                 <div class="tour-item">
-                    <a href="index.php?action=detail&id=<?= $tour['tour_id'] ?>" class="text-decoration-none">
+                    <a href="index.php?action=detail&slug=<?= $tour['slug'] ?>" class="text-decoration-none">
                         <div class="tvlk-card">
                             <div class="discount-badge">-20%</div>
 
@@ -807,7 +807,7 @@
             <?php if (!empty($blogs)): ?>
                 <?php foreach ($blogs as $blog): ?>
                     <div class="col-lg-3 col-md-6">
-                        <a href="index.php?action=blogDetail&id=<?= $blog['id'] ?? $blog['blog_id'] ?>" class="blog-card">
+                        <a href="index.php?action=blogDetail&slug=<?= $blog['slug'] ?>" class="blog-card">
                             <div class="blog-img">
                                 <span class="blog-badge"><?= htmlspecialchars($blog['category'] ?? 'Cẩm nang') ?></span>
                                 <img src="<?= !empty($blog['image']) ? (strpos($blog['image'], 'http') === 0 ? $blog['image'] : '../public/uploads/' . $blog['image']) : 'https://images.unsplash.com/photo-1542640244-7e672d6cb466?auto=format&fit=crop&w=600&q=80' ?>"
@@ -849,8 +849,9 @@
                     <div class="why-icon"><i class="bi bi-award-fill"></i></div>
                     <div class="why-text">
                         <h5>Thương hiệu Uy tín</h5>
-                        <p>Dù mới vào nghề, nhưng TravelVN tự hào là một trong những nhà tổ chức tour du lịch hàng đầu và chuyên nghiệp
-                        tại Việt Nam.</p>
+                        <p>Dù mới vào nghề, nhưng TravelVN tự hào là một trong những nhà tổ chức tour du lịch hàng đầu
+                            và chuyên nghiệp
+                            tại Việt Nam.</p>
                     </div>
                 </div>
             </div>

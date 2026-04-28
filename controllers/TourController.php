@@ -18,7 +18,7 @@ class TourController
     {
         // 1. Lấy danh sách tour hiển thị giá tốt
         $stmt = $this->db->query("SELECT * FROM tours LIMIT 8");
-        
+
         // 2. Lấy 4 bài viết Cẩm nang
         $stmtBlogs = $this->db->query("SELECT * FROM blogs ORDER BY created_at DESC LIMIT 4");
         $blogs = $stmtBlogs->fetchAll(PDO::FETCH_ASSOC);
@@ -41,20 +41,32 @@ class TourController
 
     public function detail()
     {
-        // Nhận ID từ URL và đảm bảo nó là số
-        $id = isset($_GET['id']) && is_numeric($_GET['id']) ? $_GET['id'] : 0;
+        // 1. Nhận SLUG từ URL thay vì ID
+        $slug = $_GET['slug'] ?? '';
 
-        // 1. Lấy thông tin Tour + Tên đối tác (Partner)
-        $stmtTour = $this->db->prepare("SELECT t.*, p.partner_name FROM tours t LEFT JOIN partners p ON t.partner_id = p.partner_id WHERE t.tour_id = ? AND t.status = 'active'");
-        $stmtTour->execute([$id]);
+        if (empty($slug)) {
+            header("Location: index.php?action=tours");
+            exit;
+        }
+
+        // 2. Tìm thông tin Tour bằng slug
+        $stmtTour = $this->db->prepare("SELECT t.*, p.partner_name FROM tours t LEFT JOIN partners p ON t.partner_id = p.partner_id WHERE t.slug = ? AND t.status = 'active'");
+        $stmtTour->execute([$slug]);
         $detail = $stmtTour->fetch(PDO::FETCH_ASSOC);
 
-        // 2. Lấy lịch trình chi tiết từng ngày
+        // 3. Nếu khách gõ sai slug hoặc tour bị ẩn
+        if (!$detail) {
+            echo "<script>alert('Tour không tồn tại hoặc đã ngừng hoạt động!'); window.location.href='index.php?action=tours';</script>";
+            exit;
+        }
+
+        // 4. Lấy lại ID thật để truy vấn lịch trình và ngày khởi hành
+        $id = $detail['tour_id'];
+
         $stmtSchedule = $this->db->prepare("SELECT * FROM tour_schedules WHERE tour_id = ? ORDER BY day_number ASC");
         $stmtSchedule->execute([$id]);
         $schedules = $stmtSchedule->fetchAll(PDO::FETCH_ASSOC);
 
-        // 3. Lấy danh sách các ngày khởi hành (chỉ lấy ngày chưa qua)
         $stmtDepartures = $this->db->prepare("SELECT * FROM departures WHERE tour_id = ? AND start_date >= CURDATE() ORDER BY start_date ASC");
         $stmtDepartures->execute([$id]);
         $departures = $stmtDepartures->fetchAll(PDO::FETCH_ASSOC);
@@ -62,7 +74,6 @@ class TourController
         // Gọi view hiển thị
         require __DIR__ . '/../views/tour_detail.php';
     }
-
     public function tours()
     {
         $location = isset($_GET['location']) && is_string($_GET['location']) ? $_GET['location'] : '';
@@ -188,6 +199,19 @@ class TourController
             $note = $_POST['note'] ?? '';
             $payment_method = $_POST['payment_method'] ?? 'cod';
 
+            // === BẮT ĐẦU: XỬ LÝ ĐIỂM ĐÓN TỪ 3 TÙY CHỌN ===
+            $pickup_type = $_POST['pickup_type'] ?? 'meeting_point';
+            $raw_address = $_POST['pickup_address'] ?? '';
+
+            if ($pickup_type === 'hotel') {
+                $final_pickup = "Đón Khách sạn: " . trim($raw_address);
+            } elseif ($pickup_type === 'other') {
+                $final_pickup = "Khách Tỉnh (SB/BX): " . trim($raw_address);
+            } else {
+                $final_pickup = "Tự đến Điểm hẹn tập trung";
+            }
+            // === KẾT THÚC: XỬ LÝ ĐIỂM ĐÓN ===
+
             // --- BƯỚC QUAN TRỌNG: TRỪ SỐ CHỖ TRỐNG TRƯỚC ---
             // Câu lệnh này chỉ trừ khi available_seats >= số người đặt (đảm bảo không bị âm số ghế)
             $queryUpdateSeats = "UPDATE departures 
@@ -212,11 +236,13 @@ class TourController
             $total_price = ($tour['price'] ?? 0) * $people;
             $user_id = $_SESSION['user']['user_id'] ?? 1; // Mặc định ID 1 nếu chưa đăng nhập
 
-            // 1. Lưu đơn hàng vào bảng bookings
-            $query = "INSERT INTO bookings (user_id, departure_id, customer_name, email, phone, number_of_people, total_price, note, status) 
-                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending')";
+            // 1. Lưu đơn hàng vào bảng bookings (ĐÃ CẬP NHẬT TRƯỜNG pickup_address)
+            $query = "INSERT INTO bookings (user_id, departure_id, customer_name, email, phone, pickup_address, number_of_people, total_price, note, status) 
+                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')";
             $stmtInsert = $this->db->prepare($query);
-            $stmtInsert->execute([$user_id, $departure_id, $customer_name, $email, $phone, $people, $total_price, $note]);
+
+            // Đưa biến $final_pickup vào mảng thực thi
+            $stmtInsert->execute([$user_id, $departure_id, $customer_name, $email, $phone, $final_pickup, $people, $total_price, $note]);
 
             // Lấy ID của booking vừa tạo
             $booking_id = $this->db->lastInsertId();
@@ -231,7 +257,7 @@ class TourController
                 $payment_id = $this->db->lastInsertId();
 
                 // Chuyển thẳng sang trang quét mã QR!
-                header("Location: index.php?action=payment&payment_id=" . $payment_id);
+                header("Location: index.php?action=payment&payment_id=" . encode_id($payment_id) . "&booking_id=" . encode_id($booking_id));
                 exit;
             } else {
                 // Nếu chọn COD
@@ -239,7 +265,7 @@ class TourController
                 $stmtPay = $this->db->prepare($queryPay);
                 $stmtPay->execute([$booking_id, $total_price]);
 
-                echo "<script>alert('Đặt tour thành công! Vui lòng thanh toán bằng tiền mặt khi đi tour.'); window.location.href='index.php?action=tours';</script>";
+                echo "<script>alert('Đặt tour thành công! Vui lòng thanh toán bằng tiền mặt khi đi tour.'); window.location.href='index.php?action=myBookings';</script>";
                 exit;
             }
         }
@@ -290,10 +316,15 @@ class TourController
             exit;
         }
 
-        // 2. Lấy booking_id từ URL
-        $booking_id = $_GET['booking_id'] ?? 0;
+        $hash_id = $_GET['booking_id'] ?? '';
+        $booking_id = decode_id($hash_id);
 
-        // 3. Truy vấn chi tiết đơn hàng, thông tin tour và thanh toán
+        if ($booking_id <= 0) {
+            die("<div class='text-center mt-5'><h3>Đường dẫn không hợp lệ hoặc mã vé đã bị sai lệch!</h3></div>");
+        }
+        // ---------------------------------------------------------------
+
+        // 3. Truy vấn chi tiết đơn hàng (Phần này giữ nguyên)
         $stmt = $this->db->prepare("
             SELECT b.*, d.start_date, d.end_date, t.tour_name, t.image, t.destination, t.price as unit_price,
                    p.payment_method, p.payment_status, p.transaction_code, p.payment_date
@@ -313,7 +344,7 @@ class TourController
         }
 
         // 4. Gọi View hiển thị chi tiết (Bạn cần tạo file views/booking_detail.php)
-        require __DIR__ . '/../views/success.php';
+        require __DIR__ . '/../views/booking_detail.php';
     }
     // --- HÀM XỬ LÝ HỦY TOUR ---
     public function cancelBooking()
@@ -325,7 +356,16 @@ class TourController
             exit;
         }
 
-        $booking_id = isset($_GET['booking_id']) ? (int) $_GET['booking_id'] : 0;
+        // --- SỬA TẠI ĐÂY: Giải mã ID ---
+        $hash_id = $_GET['booking_id'] ?? '';
+        $booking_id = decode_id($hash_id);
+
+        if ($booking_id <= 0) {
+            echo "<script>alert('Đường dẫn hủy tour không hợp lệ!'); window.location.href='index.php?action=myBookings';</script>";
+            exit;
+        }
+        // -------------------------------
+
         $user_id = $_SESSION['user']['user_id'] ?? $_SESSION['user']['id'];
 
         // 1. ĐÃ SỬA LỖI SQL Ở ĐÂY: Xóa b.payment_method đi, chỉ giữ lại p.payment_status
@@ -395,7 +435,7 @@ class TourController
                   WHERE b.status = 'pending' 
                   AND p.payment_method = 'qr' 
                   AND p.payment_status = 'pending'
-                  AND b.booking_date <= (NOW() - INTERVAL 5 MINUTE)";
+                  AND b.booking_date <= (NOW() - INTERVAL 15 MINUTE)";
 
         $stmt = $this->db->prepare($query);
         $stmt->execute();
@@ -417,14 +457,20 @@ class TourController
         }
     }
     // --- HÀM XEM CHI TIẾT BÀI VIẾT CẨM NANG ---
+    // --- HÀM XEM CHI TIẾT BÀI VIẾT CẨM NANG (ĐÃ CHUẨN SEO) ---
     public function blogDetail()
     {
-        // 1. Lấy ID bài viết từ URL
-        $id = isset($_GET['id']) && is_numeric($_GET['id']) ? intval($_GET['id']) : 0;
+        // 1. Lấy SLUG từ URL thay vì ID
+        $slug = $_GET['slug'] ?? '';
 
-        // 2. Truy vấn nội dung bài viết hiện tại
-        $stmt = $this->db->prepare("SELECT * FROM blogs WHERE blog_id = ?");
-        $stmt->execute([$id]);
+        if (empty($slug)) {
+            header("Location: index.php?action=blogs");
+            exit;
+        }
+
+        // 2. Truy vấn nội dung bài viết bằng slug
+        $stmt = $this->db->prepare("SELECT * FROM blogs WHERE slug = ?");
+        $stmt->execute([$slug]);
         $blog = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$blog) {
@@ -434,12 +480,15 @@ class TourController
                  </div>");
         }
 
-        // 3. Lấy 3 bài viết mới nhất làm "Bài viết liên quan" (Loại trừ bài hiện tại)
+        // 3. Lấy lại ID thật từ dữ liệu vừa tìm được để loại trừ trong bài liên quan
+        $id = $blog['blog_id'];
+
+        // 4. Lấy 3 bài viết mới nhất làm "Bài viết liên quan" (Loại trừ bài hiện tại)
         $stmtRelated = $this->db->prepare("SELECT * FROM blogs WHERE blog_id != ? ORDER BY created_at DESC LIMIT 3");
         $stmtRelated->execute([$id]);
         $relatedBlogs = $stmtRelated->fetchAll(PDO::FETCH_ASSOC);
 
-        // 4. Gọi file View để hiển thị
+        // Gọi file View để hiển thị
         require __DIR__ . '/../views/blog_detail.php';
     }
     // --- HÀM XEM DANH SÁCH TẤT CẢ CẨM NANG DU LỊCH ---

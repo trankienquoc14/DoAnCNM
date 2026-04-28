@@ -1,6 +1,7 @@
 {
     "require": {
         "ratchet/pawl": "^0.4.3",
-        "pusher/pusher-php-server": "^7.2"
+        "pusher/pusher-php-server": "^7.2",
+        "hashids/hashids": "^5.0"
     }
 }

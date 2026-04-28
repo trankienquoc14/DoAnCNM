@@ -32,8 +32,12 @@ class PaymentController
 
     public function payment()
     {
-        $payment_id = isset($_GET['payment_id']) ? (int) $_GET['payment_id'] : 0;
-        $booking_id = isset($_GET['booking_id']) ? (int) $_GET['booking_id'] : 0;
+        $hash_id = $_GET['payment_id'] ?? '';
+        $payment_id = decode_id($hash_id);
+
+        $booking_hash = $_GET['booking_id'] ?? '';
+        $booking_id = !empty($booking_hash) ? decode_id($booking_hash) : 0;
+        // --------------------------------------
 
         if ($payment_id === 0 && $booking_id > 0) {
             $stmtFind = $this->db->prepare("SELECT payment_id FROM payments WHERE booking_id = ? LIMIT 1");
@@ -75,7 +79,15 @@ class PaymentController
     public function checkPaymentStatus()
     {
         header('Content-Type: application/json');
-        $payment_id = $_GET['payment_id'] ?? 0;
+
+        // --- ĐÃ SỬA: Nhận mã băm và giải mã về số ---
+        $hash_id = $_GET['payment_id'] ?? '';
+        $payment_id = decode_id($hash_id);
+
+        if ($payment_id <= 0) {
+            echo json_encode(["status" => "error", "message" => "Invalid Payment ID"]);
+            exit;
+        }
 
         // 1. Gọi API SePay
         $url = "https://my.sepay.vn/userapi/transactions/list?account_number=" . $this->accountNumber;

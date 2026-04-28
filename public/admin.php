@@ -8,7 +8,7 @@ if (!isset($_SESSION['user']) || !in_array($_SESSION['user']['role'], $allowedRo
 require_once "../controllers/AdminController.php";
 // 🔥 NHÚNG THÊM ChatController
 require_once "../controllers/ChatController.php";
-
+require_once '../config/helpers.php';
 $controller = new AdminController();
 // 🔥 KHỞI TẠO ChatController
 $chatController = new ChatController();
