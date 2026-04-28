@@ -1,3 +1,19 @@
+<?php
+// --- BỔ SUNG LOGIC CHỌN ROUTER DỰA TRÊN ROLE ---
+$role = $_SESSION['user']['role'] ?? '';
+$userName = $_SESSION['user']['full_name'] ?? 'Quản trị viên';
+
+// Xác định file router và tên hiển thị chức vụ
+if ($role === 'admin') {
+    $baseRouter = 'admin.php';
+    $displayRole = 'Admin System';
+} else {
+    $baseRouter = 'manager.php';
+    $displayRole = 'Tour Manager';
+}
+
+$activeMenu = $activeMenu ?? 'dashboard';
+?>
 <style>
     /* --- CSS CHỈ DÀNH RIÊNG CHO SIDEBAR --- */
     .admin-sidebar {
@@ -115,6 +131,10 @@
                 class="admin-menu-item <?= ($activeMenu === 'blogs') ? 'active' : '' ?>">
                 <i class="bi bi-journal-text"></i> Quản lý Bài viết
             </a>
+            <a href="<?= $baseRouter ?>?action=chat"
+                class="admin-menu-item <?= ($activeMenu === 'chat') ? 'active' : '' ?>">
+                <i class="bi bi-chat-left-dots-fill"></i> Tin nhắn hỗ trợ
+            </a>
             <a href="../public/manager.php?action=report"
                 class="admin-menu-item <?= ($activeMenu === 'report') ? 'active' : '' ?>">
                 <i class="bi bi-graph-up-arrow"></i> Báo cáo doanh thu
@@ -122,3 +142,43 @@
         </div>
     </div>
 </div>
+
+<script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-4" style="z-index: 9999;">
+    <div id="bookingToast" class="toast align-items-center text-white border-0 shadow-lg"
+        style="background-color: #10b981; border-radius: 12px;" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex p-2">
+            <div class="toast-body fw-bold fs-6" id="toastMessage">
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Bật log để debug xem có nhận được sóng không (khi chạy thật có thể xóa dòng này)
+    Pusher.logToConsole = true;
+
+    // 🔥 NHỚ THAY 'KEY_CỦA_BẠN' BẰNG ĐÚNG CÁI KEY BÊN TRANG PUSHER NHÉ 🔥
+    var pusher = new Pusher('dfb02b6665ceae1b4add', {
+        cluster: 'ap1' // Cluster lúc bạn tạo là ap1
+    });
+
+    // Bật kênh 'admin-channel' lên nghe (phải khớp với tên kênh bên PHP)
+    var channel = pusher.subscribe('admin-channel');
+
+    // Đợi tín hiệu 'new-booking'
+    channel.bind('new-booking', function (data) {
+
+        // Nhận được tín hiệu -> Nhét nội dung vào Toast
+        document.getElementById('toastMessage').innerText = data.message;
+
+        // Kích hoạt show Toast của Bootstrap
+        const toastElement = document.getElementById('bookingToast');
+        const toast = new bootstrap.Toast(toastElement, { delay: 10000 }); // Hiện 10 giây rồi tự tắt
+        toast.show();
+
+    });
+</script>

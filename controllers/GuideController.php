@@ -94,7 +94,7 @@ class GuideController
             }
         }
     }
-    
+
     // ================= UPDATE TRẠNG THÁI TOUR =================
     public function updateStatus()
     {
@@ -124,6 +124,15 @@ class GuideController
             header("Location: guide.php?action=viewDeparture&id=" . $departure_id);
             exit();
         }
+    }
+    // ================= HỖ TRỢ KHÁCH TRONG ĐOÀN (CHAT) =================
+    public function chat()
+    {
+        // Khai báo biến để UI nhận diện mục đang chọn (nếu cần dùng trong Header)
+        $activeMenu = 'chat';
+
+        // Gọi đến file view riêng biệt không có sidebar của HDV
+        require __DIR__ . '/../views/guide/chat_guide.php';
     }
 }
 ?>

@@ -735,7 +735,7 @@ class ManagerController
     {
         $stmt = $this->db->query("SELECT * FROM blogs ORDER BY created_at DESC");
         $blogsList = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
+
         // Bạn cần khai báo biến activeMenu để sidebar sáng màu
         $activeMenu = 'blogs';
         require __DIR__ . '/../views/manager/manager_blogs.php';
@@ -751,7 +751,7 @@ class ManagerController
             $stmt->execute([$id]);
             $blog = $stmt->fetch(PDO::FETCH_ASSOC);
         }
-        
+
         $activeMenu = 'blogs';
         require __DIR__ . '/../views/manager/blog_form.php';
     }
@@ -764,21 +764,21 @@ class ManagerController
             $category = $_POST['category'] ?? 'Cẩm nang';
             $short_desc = $_POST['short_desc'] ?? '';
             $content = $_POST['content'] ?? '';
-            
+
             // Xử lý upload ảnh (Giống phong cách storeTour của bạn)
-            $imageName = $_POST['old_image'] ?? ''; 
-            
+            $imageName = $_POST['old_image'] ?? '';
+
             if (!empty($_FILES['image']['name'])) {
                 $targetDir = __DIR__ . '/../public/uploads/';
                 $newImageName = time() . '_' . $_FILES['image']['name'];
-                
+
                 // XÓA ẢNH CŨ nếu có update ảnh mới
                 if (!empty($imageName) && strpos($imageName, 'http') === false && file_exists($targetDir . $imageName)) {
                     unlink($targetDir . $imageName);
                 }
 
                 if (move_uploaded_file($_FILES['image']['tmp_name'], $targetDir . $newImageName)) {
-                    $imageName = $newImageName; 
+                    $imageName = $newImageName;
                 }
             }
 
@@ -817,7 +817,7 @@ class ManagerController
             // Xóa khỏi DB
             $stmtDel = $this->db->prepare("DELETE FROM blogs WHERE blog_id = ?");
             $stmtDel->execute([$id]);
-            
+
             $_SESSION['success'] = "Đã xóa bài viết thành công!";
         } else {
             $_SESSION['error'] = "Không tìm thấy bài viết để xóa!";
@@ -825,6 +825,11 @@ class ManagerController
 
         header("Location: manager.php?action=blogs");
         exit;
+    }
+    public function chat()
+    {
+        $activeMenu = 'chat'; // Để sidebar của Manager sáng mục Chat
+        require_once __DIR__ . '/../views/admin/chat_manage.php'; // Dùng chung giao diện với Admin luôn cho nhàn
     }
 
 }

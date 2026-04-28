@@ -113,10 +113,27 @@ if (session_status() === PHP_SESSION_NONE) {
                         </a>
                     </li>
                     <li class="nav-item me-3">
-                        <a class="nav-link nav-link-custom" href="#">
+                        <?php
+                        $role = $_SESSION['user']['role'] ?? 'customer';
+                        $supportLink = 'javascript:void(0);'; // Mặc định không chuyển trang
+                        $onClick = 'toggleChat()'; // Mặc định là bật bong bóng chat
+                        
+                        if ($role == 'admin') {
+                            $supportLink = 'admin.php?action=chat';
+                            $onClick = '';
+                        } elseif ($role == 'tour_manager') {
+                            $supportLink = 'manager.php?action=chat';
+                            $onClick = '';
+                        } elseif ($role == 'guide') {
+                            $supportLink = 'guide.php?action=chat';
+                            $onClick = '';
+                        }
+                        ?>
+                        <a class="nav-link nav-link-custom" href="<?= $supportLink ?>" onclick="<?= $onClick ?>">
                             <i class="bi bi-headset me-1"></i> Hỗ trợ
                         </a>
                     </li>
+                    
                     <?php if (isset($_SESSION['user'])): ?>
 
                         <?php if ($_SESSION['user']['role'] == 'tour_manager'): ?>

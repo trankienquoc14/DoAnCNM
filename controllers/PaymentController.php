@@ -1,12 +1,12 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
-
+require_once __DIR__ . '/../vendor/autoload.php';
 class PaymentController
 {
     private $db;
     // --- CẤU HÌNH SEPAY ---
-    private $sepayToken = "";
-    private $accountNumber = "";
+    private $sepayToken = "_";
+    private $accountNumber = "050134910132";
 
     public function __construct()
     {
@@ -139,6 +139,32 @@ class PaymentController
             if ($payData) {
                 $this->db->prepare("UPDATE bookings SET status = 'confirmed' WHERE booking_id = ?")
                     ->execute([$payData['booking_id']]);
+                // === BẮT ĐẦU: GỬI THÔNG BÁO PUSHER ===
+                try {
+                    $options = array(
+                        'cluster' => 'ap1',
+                        'useTLS' => true
+                    );
+
+                    // THAY 3 MÃ CỦA BẠN VÀO ĐÂY
+                    $pusher = new Pusher\Pusher(
+                        'dfb02b6665ceae1b4add',
+                        '8897f5d7c596c6ca98eb',
+                        '2146792',
+                        $options
+                    );
+
+                    // Lấy tên khách hàng để thông báo cho sinh động (nếu DB có trường này)
+                    $customerName = "một khách hàng";
+
+                    $data['message'] = "💰 Ting ting! Khách hàng vừa chuyển khoản thành công đơn #" . $payData['booking_id'];
+
+                    // Phát sóng sự kiện 'new-booking' lên kênh 'admin-channel'
+                    $pusher->trigger('admin-channel', 'new-booking', $data);
+                } catch (Exception $e) {
+                    error_log("Lỗi Pusher: " . $e->getMessage());
+                }
+                // === KẾT THÚC: GỬI THÔNG BÁO PUSHER ===
             }
             echo json_encode(["status" => "paid"]);
         } else {

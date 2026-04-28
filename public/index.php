@@ -8,20 +8,23 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once '../controllers/TourController.php';
 require_once '../controllers/PaymentController.php';
 require_once '../controllers/AuthController.php';
-// BỔ SUNG DÒNG NÀY ĐỂ HỆ THỐNG TÌM THẤY REVIEWCONTROLLER
 require_once '../controllers/ReviewController.php';
+// 🔥 BỔ SUNG: Nhúng ChatController vào hệ thống
+require_once '../controllers/ChatController.php';
 
 // 3. Lấy hành động từ URL
 $action = $_GET['action'] ?? 'home';
 
 // 4. Phân luồng Controller
-// Sửa thành: Bổ sung thêm 'webhook' và 'checkPaymentStatus'
 if ($action === 'payment' || $action === 'confirmPayment' || $action === 'webhook' || $action === 'checkPaymentStatus') {
     $c = new PaymentController();
 } elseif ($action === 'login' || $action === 'register' || $action === 'logout' || $action === 'profile' || $action === 'updateProfile' || $action === 'updatePassword') {
     $c = new AuthController();
 } elseif ($action === 'submitReview') {
     $c = new ReviewController();
+} elseif ($action === 'sendMessage' || $action === 'getHistory') {
+    // 🔥 BỔ SUNG: Định tuyến các hành động liên quan đến Chat về đúng ChatController
+    $c = new ChatController();
 } else {
     // Các action: home, tours, detail, booking, confirmBooking, myBookings, bookingDetail
     $c = new TourController();
@@ -29,7 +32,6 @@ if ($action === 'payment' || $action === 'confirmPayment' || $action === 'webhoo
 
 // 5. Kiểm tra hàm có tồn tại không
 if (!method_exists($c, $action)) {
-    // Debug nhỏ: Nếu lỗi 404, hãy kiểm tra xem tên hàm trong Controller có viết hoa đúng bookingDetail không
     die("404 - Không tìm thấy hành động: " . htmlspecialchars($action) . " trong " . get_class($c));
 }
 

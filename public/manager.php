@@ -111,10 +111,6 @@ switch ($action) {
         $controller->report();
         break;
 
-    case 'report':
-        $controller->report();
-        break;
-
     // ================= QUẢN LÝ BÀI VIẾT (CẨM NANG) =================
     case 'blogs':
         $controller->blogs();
@@ -131,7 +127,27 @@ switch ($action) {
     case 'deleteBlog':
         $controller->deleteBlog();
         break;
+    case 'chat':
+        // Gọi hàm chat() trong ManagerController để hiện giao diện Messenger
+        // Bạn cần thêm hàm chat() vào ManagerController tương tự AdminController
+        $controller->chat();
+        break;
 
+    case 'getSessions':
+        $chatController->getSessions();
+        break;
+
+    case 'getHistory':
+        $chatController->getHistory();
+        break;
+
+    case 'sendMessage':
+        $chatController->sendMessage();
+        break;
+    case 'deleteSession':
+        $chatController->deleteSession();
+        break;
+    
     default:
         // Thay vì chỉ in 404, bạn có thể in ra action bị lỗi để dễ fix bug hơn
         echo "<h2 style='text-align:center; margin-top:50px;'>Lỗi 404: Không tìm thấy action '{$action}'</h2>";
