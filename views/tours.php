@@ -57,6 +57,8 @@
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         display: flex;
         align-items: center;
+        flex-wrap: wrap;
+        /* Thêm dòng này để cho phép xuống hàng */
         width: 100%;
     }
 
@@ -355,6 +357,30 @@
         transition: 0.2s;
         text-align: center;
         font-size: 0.9rem;
+    }
+
+    /* Fix thanh tìm kiếm trên Mobile */
+    @media (max-width: 768px) {
+        .search-group {
+            flex: 1 1 100%;
+            /* Ép mỗi ô chiếm 100% chiều ngang trên đt */
+            border-right: none;
+            /* Bỏ gạch dọc */
+            border-bottom: 1px solid var(--tvlk-border);
+            /* Thêm gạch ngang */
+            padding: 10px 15px;
+        }
+
+        .search-group:nth-child(3) {
+            border-bottom: none;
+            /* Bỏ gạch ngang ở ô cuối cùng (Ngân sách) */
+        }
+
+        .btn-search-unified {
+            width: 100%;
+            /* Nút tìm kiếm full viền */
+            margin-top: 10px;
+        }
     }
 </style>
 

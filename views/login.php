@@ -3,14 +3,17 @@
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-    html, body {
-        height: 100%;
+    html,
+    body {
+        min-height: 100vh;
+        /* ĐỔI 1: Thay height 100% bằng min-height 100vh */
+        margin: 0;
     }
 
     body {
-        /* Thêm lớp phủ gradient đen mờ lên trên ảnh nền để form nổi bật hơn */
-        background: linear-gradient(rgba(3, 18, 26, 0.3), rgba(3, 18, 26, 0.5)), 
-                    url('uploads/login.jpg') center/cover no-repeat;
+        /* ĐỔI 2: Thêm chữ 'fixed' vào cuối dòng background */
+        background: linear-gradient(rgba(3, 18, 26, 0.3), rgba(3, 18, 26, 0.5)),
+            url('uploads/login.jpg') center/cover no-repeat fixed;
         font-family: 'Inter', sans-serif;
         display: flex;
         flex-direction: column;
@@ -29,8 +32,8 @@
         max-width: 420px;
         background: #ffffff;
         padding: 40px 30px;
-        border-radius: 20px; 
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); 
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
         border: none;
     }
 
@@ -53,7 +56,7 @@
     }
 
     h2 {
-       text-align: center;
+        text-align: center;
         margin-bottom: 24px;
         font-weight: 600;
         color: #333;
@@ -88,8 +91,9 @@
 
     input {
         width: 100%;
-        padding: 14px 16px 14px 45px; /* Chừa khoảng trống bên trái cho icon */
-        border-radius: 12px; 
+        padding: 14px 16px 14px 45px;
+        /* Chừa khoảng trống bên trái cho icon */
+        border-radius: 12px;
         border: 1px solid #e1e8ee;
         font-size: 1rem;
         color: #03121a;
@@ -98,7 +102,9 @@
         box-sizing: border-box;
     }
 
-    input::placeholder { color: #a0aab2; }
+    input::placeholder {
+        color: #a0aab2;
+    }
 
     /* Hiệu ứng khi focus vào ô nhập liệu */
     input:focus {
@@ -166,7 +172,7 @@
 
 <div class="main-content">
     <div class="login-container">
-        
+
         <div class="login-header">
             <div class="login-icon"><i class="bi bi-person-fill"></i></div>
             <h2>Đăng nhập</h2>

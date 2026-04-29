@@ -33,29 +33,37 @@ class AuthController
                 if (!$data) {
                     $error = "Email không tồn tại";
                 } else {
-                    // Hỗ trợ kiểm tra cả mật khẩu Bcrypt mới và MD5 cũ trong CSDL của bạn
-                    $isPasswordCorrect = false;
-                    if (password_verify($password, $data['password'])) {
-                        $isPasswordCorrect = true;
-                    } elseif (md5($password) === $data['password']) {
-                        $isPasswordCorrect = true;
-                    }
-
-                    if ($isPasswordCorrect) {
-                        // Lưu session chuẩn khớp với các biến mà file booking.php đang gọi
-                        $_SESSION['user'] = [
-                            'user_id' => $data['user_id'],
-                            'full_name' => $data['full_name'],
-                            'email' => $data['email'],
-                            'phone' => $data['phone'],
-                            'role' => $data['role']
-                        ];
-                        
-                        // Đăng nhập xong -> Chuyển hướng qua index.php
-                        header("Location: index.php?action=home");
-                        exit();
+                    // ==========================================
+                    // KIỂM TRA TRẠNG THÁI TÀI KHOẢN TRƯỚC KHI XÉT MẬT KHẨU
+                    // ==========================================
+                    if (isset($data['status']) && $data['status'] === 'inactive') {
+                        // Nếu status là 'inactive' (hoặc 'locked', tùy database của bạn thiết lập)
+                        $error = "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ Admin!";
                     } else {
-                        $error = "Sai mật khẩu";
+                        // Tài khoản hoạt động bình thường, tiến hành kiểm tra mật khẩu
+                        $isPasswordCorrect = false;
+                        if (password_verify($password, $data['password'])) {
+                            $isPasswordCorrect = true;
+                        } elseif (md5($password) === $data['password']) {
+                            $isPasswordCorrect = true;
+                        }
+
+                        if ($isPasswordCorrect) {
+                            // Lưu session
+                            $_SESSION['user'] = [
+                                'user_id' => $data['user_id'],
+                                'full_name' => $data['full_name'],
+                                'email' => $data['email'],
+                                'phone' => $data['phone'],
+                                'role' => $data['role']
+                            ];
+                            
+                            // Đăng nhập xong -> Chuyển hướng
+                            header("Location: index.php?action=home");
+                            exit();
+                        } else {
+                            $error = "Sai mật khẩu";
+                        }
                     }
                 }
             }

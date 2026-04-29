@@ -83,6 +83,33 @@ if (session_status() === PHP_SESSION_NONE) {
             padding: 6px 16px !important;
             border: 1px solid #e0e0e0;
         }
+
+        /* Ép Navbar luôn nổi bần bật trên tất cả các trang (Kể cả Mobile và PC) */
+        nav.navbar-custom {
+            position: relative;
+            z-index: 1050 !important;
+            /* Mức z-index chuẩn của Bootstrap cho header */
+        }
+
+        /* Fix lỗi Dropdown bị chìm ra phía sau các khối div bên dưới */
+        .dropdown-menu {
+            z-index: 1060 !important;
+        }
+
+        /* Fix lỗi màn hình Mobile không bấm được các link bên trong Menu xổ xuống */
+        @media (max-width: 991.98px) {
+            .navbar-collapse {
+                position: absolute;
+                top: 100%;
+                /* Đẩy menu xuống dưới thanh navbar */
+                left: 0;
+                right: 0;
+                background-color: white;
+                padding: 1rem;
+                box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+                z-index: 1055 !important;
+            }
+        }
     </style>
 </head>
 
@@ -94,7 +121,7 @@ if (session_status() === PHP_SESSION_NONE) {
                 <i class="bi bi-globe-americas me-2"></i> TravelVN
             </a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-toggle="#navbarNav"
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -133,7 +160,7 @@ if (session_status() === PHP_SESSION_NONE) {
                             <i class="bi bi-headset me-1"></i> Hỗ trợ
                         </a>
                     </li>
-                    
+
                     <?php if (isset($_SESSION['user'])): ?>
 
                         <?php if ($_SESSION['user']['role'] == 'tour_manager'): ?>

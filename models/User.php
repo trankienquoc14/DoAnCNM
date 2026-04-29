@@ -153,11 +153,22 @@ class User
     // ================= TOGGLE STATUS =================
     public function toggleStatus($id)
     {
-        return $this->conn->prepare("
-            UPDATE users SET status =
-            CASE WHEN status='active' THEN 'locked' ELSE 'active' END
-            WHERE user_id=?
-        ")->execute([$id]);
+        // 1. Lấy trạng thái hiện tại của user (SỬ DỤNG $this->conn MỚI ĐÚNG)
+        $stmt = $this->conn->prepare("SELECT status FROM users WHERE user_id = ?");
+        $stmt->execute([$id]);
+        $currentStatus = $stmt->fetchColumn();
+
+        // 2. Nếu rỗng hoặc null, coi như nó đang 'active'
+        if (empty($currentStatus)) {
+            $currentStatus = 'active';
+        }
+
+        // 3. Đảo ngược trạng thái
+        $newStatus = ($currentStatus === 'active') ? 'inactive' : 'active';
+
+        // 4. Cập nhật vào Database
+        $updateStmt = $this->conn->prepare("UPDATE users SET status = ? WHERE user_id = ?");
+        return $updateStmt->execute([$newStatus, $id]);
     }
 
     // ================= RESET PASSWORD =================
